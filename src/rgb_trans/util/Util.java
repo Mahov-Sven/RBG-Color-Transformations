@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import rgb_trans.main.PE;
+import rgb_trans.main.RGBCT;
 
 public class Util {
 	
@@ -518,7 +518,7 @@ public class Util {
 		
 		int begParenthIndex = getFirstIndexOf("(", constrStr);
 		
-		return (begParenthIndex > 0) && allCharsMatch('(', ')', constrStr) && isValidByCharset(constrStr.substring(0,begParenthIndex), PE.CHARSET_NUMBERS_LETTERS);
+		return (begParenthIndex > 0) && allCharsMatch('(', ')', constrStr) && isValidByCharset(constrStr.substring(0,begParenthIndex), RGBCT.CHARSET_NUMBERS_LETTERS);
 	}
 	
 	public static boolean isDecimal(String number){
@@ -549,12 +549,12 @@ public class Util {
 		int periodIndex = getFirstIndexOf(".", methodStr);
 		int begParenthIndex = getFirstIndexOf("(", methodStr);
 		
-		return (periodIndex > 0) && (begParenthIndex > 0) && allCharsMatch('(', ')', methodStr) && isValidByCharset(methodStr.substring(0,periodIndex), PE.CHARSET_NUMBERS_LETTERS) && isValidByCharset(methodStr.substring(periodIndex + 1, begParenthIndex), PE.CHARSET_NUMBERS_LETTERS);
+		return (periodIndex > 0) && (begParenthIndex > 0) && allCharsMatch('(', ')', methodStr) && isValidByCharset(methodStr.substring(0,periodIndex), RGBCT.CHARSET_NUMBERS_LETTERS) && isValidByCharset(methodStr.substring(periodIndex + 1, begParenthIndex), RGBCT.CHARSET_NUMBERS_LETTERS);
 	}
 	
 	public static boolean isNumber(char number){
-		for(int i = 0; i < PE.CHARSET_NUMBERS.length; i++){
-			if(PE.CHARSET_NUMBERS[i] == number){
+		for(int i = 0; i < RGBCT.CHARSET_NUMBERS.length; i++){
+			if(RGBCT.CHARSET_NUMBERS[i] == number){
 				return true;
 			}
 		}
@@ -575,7 +575,7 @@ public class Util {
 		if(!isNumber(posneg) && ((posneg != '+' && posneg != '-') || number.length() <= 1)) return false;
 		
 		char numbCast = number.charAt(number.length() - 1);
-		if(!isNumber(numbCast) && !Util.isValidByCharset(numbCast, PE.CHARSET_NUMBER_CASTING_CHARACTERS)) return false;
+		if(!isNumber(numbCast) && !Util.isValidByCharset(numbCast, RGBCT.CHARSET_NUMBER_CASTING_CHARACTERS)) return false;
 		return true;
 	}
 	

@@ -1,6 +1,6 @@
 package rgb_trans.main;
 
-public class PE {
+public class RGBCT {
 	
 	/*
 	 *  Each Global Constant has an ID and a Version.

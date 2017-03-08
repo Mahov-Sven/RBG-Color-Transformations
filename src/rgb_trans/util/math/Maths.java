@@ -1,6 +1,6 @@
 package rgb_trans.util.math;
 
-import rgb_trans.main.PE;
+import rgb_trans.main.RGBCT;
 import rgb_trans.util.Util;
 
 public class Maths {
@@ -26,7 +26,7 @@ public class Maths {
 	}
 	
 	public static long hexToLong(String hex){
-		if(!Util.isValidByCharset(hex, PE.CHARSET_HEX)) 
+		if(!Util.isValidByCharset(hex, RGBCT.CHARSET_HEX)) 
 			throw new IllegalArgumentException("'" + hex + "' is not a valid hexadecimal string.");
 	
 		long result = 0;
