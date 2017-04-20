@@ -58,6 +58,13 @@ public class DrawCanvas extends Canvas{
 		g.fillRect(x1, y1, x2 - x1, y2 - y1);
 	}
 	
+	public void drawPoly(Mesh2D mesh, Color color){
+		graphicsCreated();
+		
+		g.setColor(color);
+		g.fillPolygon(mesh.getXVerteces(), mesh.getYVerteces(), mesh.length());
+	}
+	
 	public void cleanUp(){
 		graphicsCreated();
 		
