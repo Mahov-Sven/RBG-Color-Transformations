@@ -37,25 +37,20 @@ public class Display {
 	}
 	
 	public void drawMain(){
+		
+		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
 		sideBar.setLayout(new GridLayout(10,1));
 		sideBar.setBackground(Color.darkGray);
 		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
-
+		
+		//Creates the buttons and adds them to the sidebar.
 		brightnessButton = new JButton("Change Brightness");
 		luminanceButton = new JButton("Change Luminance");
 		saturationButton = new JButton("Change Saturation");
 		offsetButton = new JButton("Change Offset");
 		rotationButton = new JButton("Change Rotation");
-		
-		Dimension buttonSize = new Dimension(WIDTH/4, HEIGHT/10);
-		
-		brightnessButton.setSize(buttonSize);
-		luminanceButton.setSize(buttonSize);
-		saturationButton.setSize(buttonSize);
-		offsetButton.setSize(buttonSize);
-		rotationButton.setSize(buttonSize);
-		
+
 		sideBar.add(brightnessButton);
 		sideBar.add(luminanceButton);
 		sideBar.add(saturationButton);
