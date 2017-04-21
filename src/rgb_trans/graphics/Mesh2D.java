@@ -5,9 +5,9 @@ public class Mesh2D {
 	private PixelVertex[] verteces;
 	private PixelVertex position;
 	
-	public Mesh2D(PixelVertex position, PixelVertex... verteces){
+	public Mesh2D(PixelVertex... verteces){
 		this.verteces = new PixelVertex[verteces.length];
-		this.position = position;
+		this.position = new PixelVertex(0, 0);
 		
 		for(int i = 0; i < verteces.length; i++){
 			this.verteces[i] = verteces[i];

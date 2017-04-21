@@ -1,21 +1,18 @@
 package rgb_trans.graphics;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import rgb_trans.util.math.Fraction;
 
-
-public class DrawCanvas extends Canvas{
+public class DrawCanvas extends JPanel{
 	private static final long serialVersionUID = 1L;
-	private Graphics g;
-	private Color backgroundColor;
-	private int width, height;
+	
+	protected Graphics g;
+	protected Color backgroundColor;
+	protected int width, height;
 	
 	public DrawCanvas(int width, int height, Color backgroundColor){
 		this.width = width;
