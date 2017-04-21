@@ -12,11 +12,13 @@ public class Display {
 	 * components of the program.
 	 */
 	private static final int UPS = 60;
-	private int WIDTH;
-	private int HEIGHT;
+	private int WIDTH = 1500;
+	private int HEIGHT = 900;
 	private static final long NANO = 1000000000;
 	
-	private static DrawCanvas canvas;
+	private static ColorGraphFrame canvas;
+	
+	private static Arrow arrow;
 	
 	public Display(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
@@ -24,7 +26,7 @@ public class Display {
 	}
 	
 	public void drawMain(){
-		canvas = new DrawCanvas(this.WIDTH, this.HEIGHT, Color.BLACK);
+		canvas = new ColorGraphFrame(WIDTH, HEIGHT);
 		
 		JFrame frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,23 +35,31 @@ public class Display {
 		frame.pack();
 		frame.setVisible(true);
 		
-		canvas.createBufferStrategy(2);
 		run();
 	}
 	
-	private static void render(){
-		canvas.ready();
-		canvas.clear();
-		canvas.cleanUp();
+private static int iteration = 0;
+	
+	public static void update(){
+		float red = (float) (Math.cos(Math.toDegrees(iteration / 1)) / 2 + 0.5);
+		float green = (float) (Math.cos(Math.toDegrees(iteration / 8)) / 2 + 0.5);
+		float blue =(float) (Math.cos(Math.toDegrees(iteration / 16)) / 2 + 0.5);
+		Color color = new Color(red, green, blue);
+		canvas.setColor(color);
+		iteration = (iteration + 1) % 16777216;
 	}
 	
-	private static void run(){
+	public static void render(){
+	}
+	
+	public static void run(){
 		boolean running = true;
 		long lastUpTime = System.nanoTime();
 		long lastSecTime = System.nanoTime();
 		int ups = 0;
 		while(running){
 			if(System.nanoTime() - lastUpTime > NANO/UPS){
+				update();
 				render();
 				lastUpTime = System.nanoTime();
 				ups++;
