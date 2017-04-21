@@ -22,6 +22,7 @@ public class Display {
 	private int HEIGHT;
 	private static final long NANO = 1000000000;
 	
+	private ColorImageFrame imageFrame;
 	private JPanel sideBar;
 	private JButton brightnessButton;
 	private JButton luminanceButton;
@@ -37,11 +38,12 @@ public class Display {
 	}
 	
 	public void drawMain(){
+		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT);
 		
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
 		sideBar.setLayout(new GridLayout(10,1));
-		sideBar.setBackground(Color.darkGray);
+		sideBar.setBackground(Color.lightGray);
 		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
 		
 		//Creates the buttons and adds them to the sidebar.
@@ -61,10 +63,14 @@ public class Display {
 		JFrame frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1920, 1080);
+		frame.add(imageFrame);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
 		//frame.pack();
 		frame.setVisible(true);
+		
+		int[] pixels = {6556160, 2660, 680960, 0};
+		imageFrame.setPixels(pixels, 2, 2);
 		
 		run();
 	}
