@@ -114,7 +114,7 @@ public class ColorImageFrame extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
-		g.setColor(Color.DARK_GRAY);
+		g.setColor(new Color(1, 7, 18));
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		g.setColor(Color.GRAY);

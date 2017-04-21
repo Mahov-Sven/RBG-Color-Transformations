@@ -43,7 +43,7 @@ public class Display {
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
 		sideBar.setLayout(new GridLayout(10,1));
-		sideBar.setBackground(Color.lightGray);
+		sideBar.setBackground(new Color(19, 23, 31));
 		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
 		
 		//Creates the buttons and adds them to the sidebar.
