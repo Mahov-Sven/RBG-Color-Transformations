@@ -1,8 +1,14 @@
 package rgb_trans.graphics;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class Display {
 
@@ -12,13 +18,18 @@ public class Display {
 	 * components of the program.
 	 */
 	private static final int UPS = 60;
-	private int WIDTH = 1500;
-	private int HEIGHT = 900;
+	private int WIDTH;
+	private int HEIGHT;
 	private static final long NANO = 1000000000;
 	
-	private static ColorGraphFrame canvas;
+	private JPanel sideBar;
+	private JButton brightnessButton;
+	private JButton luminanceButton;
+	private JButton saturationButton;
+	private JButton offsetButton;
+	private JButton rotationButton;
 	
-	private static Arrow arrow;
+	
 	
 	public Display(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
@@ -26,41 +37,50 @@ public class Display {
 	}
 	
 	public void drawMain(){
-		canvas = new ColorGraphFrame(WIDTH, HEIGHT);
+		sideBar = new JPanel();
+		sideBar.setLayout(new GridLayout(10,1));
+		sideBar.setBackground(Color.darkGray);
+		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
+
+		brightnessButton = new JButton("Change Brightness");
+		luminanceButton = new JButton("Change Luminance");
+		saturationButton = new JButton("Change Saturation");
+		offsetButton = new JButton("Change Offset");
+		rotationButton = new JButton("Change Rotation");
+		
+		Dimension buttonSize = new Dimension(WIDTH/4, HEIGHT/10);
+		
+		brightnessButton.setSize(buttonSize);
+		luminanceButton.setSize(buttonSize);
+		saturationButton.setSize(buttonSize);
+		offsetButton.setSize(buttonSize);
+		rotationButton.setSize(buttonSize);
+		
+		sideBar.add(brightnessButton);
+		sideBar.add(luminanceButton);
+		sideBar.add(saturationButton);
+		sideBar.add(offsetButton);
+		sideBar.add(rotationButton);
+		
 		
 		JFrame frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(canvas);
+		frame.setSize(1920, 1080);
+		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
-		frame.pack();
+		//frame.pack();
 		frame.setVisible(true);
 		
 		run();
 	}
-	
-private static int iteration = 0;
-	
-	public static void update(){
-		float red = (float) (Math.cos(Math.toDegrees(iteration / 1)) / 2 + 0.5);
-		float green = (float) (Math.cos(Math.toDegrees(iteration / 8)) / 2 + 0.5);
-		float blue =(float) (Math.cos(Math.toDegrees(iteration / 16)) / 2 + 0.5);
-		Color color = new Color(red, green, blue);
-		canvas.setColor(color);
-		iteration = (iteration + 1) % 16777216;
-	}
-	
-	public static void render(){
-	}
-	
-	public static void run(){
+
+	private static void run(){
 		boolean running = true;
 		long lastUpTime = System.nanoTime();
 		long lastSecTime = System.nanoTime();
 		int ups = 0;
 		while(running){
 			if(System.nanoTime() - lastUpTime > NANO/UPS){
-				update();
-				render();
 				lastUpTime = System.nanoTime();
 				ups++;
 			}
