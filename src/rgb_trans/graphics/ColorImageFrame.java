@@ -110,18 +110,6 @@ public class ColorImageFrame extends JPanel {
 		windowX += deltaX;
 		windowY += deltaY;
 
-		if (windowX < 0)
-			windowX = 0;
-
-		if (windowX > getWidth())
-			windowX = getWidth();
-
-		if (windowY < 0)
-			windowY = 0;
-
-		if (windowY > getHeight())
-			windowY = getHeight();
-
 		repaint();
 	}
 
@@ -166,6 +154,7 @@ public class ColorImageFrame extends JPanel {
 	}
 
 	public void setPixels(int[] pixels, int width, int height) {
+		this.selected = -1;
 		this.pixels = pixels;
 		this.arrayWidth = width;
 		this.arrayHeight = height;
