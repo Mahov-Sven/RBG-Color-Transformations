@@ -5,6 +5,14 @@ import rgb_trans.util.Util;
 
 public class Maths {
 	
+	public static int factorial(int numb){
+		int result = 1;
+		for(int i = 1; i <= numb; i++){
+			result *= i;
+		}
+		return result;
+	}
+	
 	public static int LCM(int a, int b){
 		return a / GCF(a, b) * b;
 	}

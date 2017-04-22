@@ -1,5 +1,6 @@
 package rgb_trans.test;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -15,7 +16,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import rgb_trans.graphics.ColorGraphFrame;
 import rgb_trans.graphics.ColorImageFrame;
+import rgb_trans.util.math.ColorTransformationMaths;
+import rgb_trans.util.math.Mat4f;
+import rgb_trans.util.math.Vec4f;
 
 public class TestMainSven {
 	
@@ -25,9 +30,12 @@ public class TestMainSven {
 	private static final long NANO = 1000000000;
 	
 	private static ColorImageFrame imageFrame;
+	private static ColorGraphFrame graphFrame;
 
 	public static void main(String... args){
+		
 		imageFrame = new ColorImageFrame(WIDTH, HEIGHT);
+		graphFrame = new ColorGraphFrame(WIDTH, HEIGHT);
 		
 		JFrame frame = new JFrame("Title");
 		
@@ -56,7 +64,7 @@ public class TestMainSven {
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
-		frame.add(imageFrame);
+		frame.add(graphFrame);
 		frame.setLocationByPlatform(true);
 		frame.pack();
 		frame.setVisible(true);
@@ -67,8 +75,17 @@ public class TestMainSven {
 		run();
 	}
 	
+	private static Color color = Color.RED;
+	
 	public static void update(){
+		Vec4f colorVec = ColorTransformationMaths.loadColorToVec4f(color);
+		System.out.println(colorVec.toString());
+		Mat4f rotMat = ColorTransformationMaths.rotationMatrix(120);
+		colorVec = Mat4f.mul(rotMat, colorVec);
+		System.out.println(colorVec.toString());
+		color = ColorTransformationMaths.vec4fToColor(colorVec);
 		
+		graphFrame.setColor(color);
 	}
 	
 	public static void render(){
