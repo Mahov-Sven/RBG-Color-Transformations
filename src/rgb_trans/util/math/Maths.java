@@ -5,6 +5,16 @@ import rgb_trans.util.Util;
 
 public class Maths {
 	
+	public static float clamp(float numb){
+		return clamp(numb, 0, 1);
+	}
+	
+	public static float clamp(float numb, float min, float max){
+		if(numb < min) return min;
+		if(numb > max) return max;
+		return numb;
+	}
+	
 	public static int factorial(int numb){
 		int result = 1;
 		for(int i = 1; i <= numb; i++){

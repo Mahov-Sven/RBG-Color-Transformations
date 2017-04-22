@@ -87,10 +87,10 @@ public class Mat4f {
 		
 		public static Vec4f mul(Mat4f mat, Vec4f vec){
 			return new Vec4f(
-					mat.s00*vec.x + mat.s10*vec.y + mat.s20*vec.z + mat.s30*vec.w,
-					mat.s01*vec.x + mat.s11*vec.y + mat.s21*vec.z + mat.s31*vec.w,
-					mat.s02*vec.x + mat.s12*vec.y + mat.s22*vec.z + mat.s32*vec.w,
-					mat.s03*vec.x + mat.s13*vec.y + mat.s23*vec.z + mat.s33*vec.w
+					mat.s00*vec.x + mat.s01*vec.y + mat.s02*vec.z + mat.s03*vec.w,
+					mat.s10*vec.x + mat.s11*vec.y + mat.s12*vec.z + mat.s13*vec.w,
+					mat.s20*vec.x + mat.s21*vec.y + mat.s22*vec.z + mat.s23*vec.w,
+					mat.s30*vec.x + mat.s31*vec.y + mat.s32*vec.z + mat.s33*vec.w
 					);
 		}
 		
@@ -210,6 +210,19 @@ public class Mat4f {
 			rotation.s21 = cosPitch*sinRoll;
 			rotation.s22 = cosPitch*cosRoll;
 			return Mat4f.mul(rotation, this);
+		}
+		
+		public Mat4f rotate(float angle, Vec3f axis){
+			Vec3f u = axis.unit();
+			float cos = (float) Math.cos(Math.toRadians(angle));
+			float sin = (float) Math.sin(Math.toRadians(angle));
+			
+			return new Mat4f(
+					cos + u.x*u.x*(1 - cos),		u.x*u.y*(1 - cos) - u.z*sin,	u.x*u.z*(1 - cos) + u.y*sin,	0,
+					u.y*u.x*(1 - cos) + u.z*sin,	cos + u.y*u.y*(1 - cos),		u.y*u.z*(1 - cos) - u.x*sin,	0,
+					u.z*u.x*(1 - cos) - u.y*sin,	u.z*u.y*(1 - cos) + u.x*sin,	cos + u.z*u.z*(1 - cos),		0,
+					0,								0,								0,								1
+					);
 		}
 		
 		public Mat4f scale(float delta){

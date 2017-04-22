@@ -72,17 +72,21 @@ public class TestMainSven {
 		int[] pixels = {6556160, 2660, 680960, 0};
 		imageFrame.setPixels(pixels, 2, 2);
 		
+//		Vec4f colorVec = ColorTransformationMaths.loadColorToVec4f(color);
+//		Mat4f rotMat = ColorTransformationMaths.rotationMatrix(350);
+//		colorVec = Mat4f.mul(rotMat, colorVec);
+//		color = ColorTransformationMaths.vec4fToColor(colorVec);
+		
 		run();
 	}
 	
 	private static Color color = Color.RED;
 	
 	public static void update(){
+		
 		Vec4f colorVec = ColorTransformationMaths.loadColorToVec4f(color);
-		System.out.println(colorVec.toString());
-		Mat4f rotMat = ColorTransformationMaths.rotationMatrix(120);
+		Mat4f rotMat = ColorTransformationMaths.rotationMatrix(1);
 		colorVec = Mat4f.mul(rotMat, colorVec);
-		System.out.println(colorVec.toString());
 		color = ColorTransformationMaths.vec4fToColor(colorVec);
 		
 		graphFrame.setColor(color);
