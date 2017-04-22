@@ -75,8 +75,8 @@ public class ColorImageFrame extends JPanel {
 	}
 	
 	public void centerPosition(){
-		this.windowX = this.getWidth()/2;
-		this.windowY = this.getHeight()/2;
+		this.windowX = this.getWidth() / 2 - arrayWidth * pixelSize / 2;
+		this.windowY = this.getHeight() / 2 - arrayHeight * pixelSize / 2;
 		
 		repaint();
 	}
