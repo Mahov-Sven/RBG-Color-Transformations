@@ -7,7 +7,13 @@ public class Fraction{
 	private int numerator, denominator;
 	private boolean autoSimplify;
 	
-	public static Fraction ZERO = new Fraction(0, 1);
+	public static Fraction ZERO(){
+		return new Fraction(0, 1);
+	}
+	
+	public static Fraction ONE(){
+		return new Fraction(1, 1);
+	}
 	
 	public Fraction(int constant){
 		this.numerator = constant;

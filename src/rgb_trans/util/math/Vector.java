@@ -5,6 +5,15 @@ public class Vector {
 	private Fraction[] vector;
 	private int length;
 	
+	public Vector(int... values){
+		
+		for(int i = 0; i < values.length; i++){
+			vector[i] = new Fraction(values[i]);
+		}
+		
+		length = values.length;
+	}
+	
 	public Vector(Fraction... values) {
 		vector = values;
 		length = values.length;

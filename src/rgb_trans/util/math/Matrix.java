@@ -30,7 +30,7 @@ public class Matrix {
 				if(r == c){
 					matrix[r][c] = new Fraction(1,1);
 				}else{
-					matrix[r][c] = Fraction.ZERO;
+					matrix[r][c] = Fraction.ZERO();
 				}
 			}
 		}
@@ -49,7 +49,7 @@ public class Matrix {
 				if(r == c){
 					matrix[r][c] = new Fraction(1,1);
 				}else{
-					matrix[r][c] = Fraction.ZERO;
+					matrix[r][c] = Fraction.ZERO();
 				}
 			}
 		}
@@ -263,10 +263,10 @@ public class Matrix {
 		int iterations = rows < columns ? rows : columns;
 		
 		for(int i = 0; i < iterations; i++){
-			if(matrix[i][i].equals(Fraction.ZERO)){
+			if(matrix[i][i].equals(Fraction.ZERO())){
 				boolean foundSwap = false;
 				for(int r = i + 1; r < rows; r++){
-					if(!matrix[r][i].equals(Fraction.ZERO)){
+					if(!matrix[r][i].equals(Fraction.ZERO())){
 						foundSwap = true;
 						rowInterchange(i, r);
 						break;
@@ -320,7 +320,7 @@ public class Matrix {
 		
 		for(int r = 1; r < rows; r++){
 			for(int c = 0; c < columns; c++){
-				if(!matrix[r - 1][c].equals(Fraction.ZERO)){
+				if(!matrix[r - 1][c].equals(Fraction.ZERO())){
 					if(c + 1 < columns){
 						for(int row = 0; row < r; row++){
 							rowAdd(row, r, get(row, c + 1).mul(-1));
