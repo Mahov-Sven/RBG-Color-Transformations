@@ -21,8 +21,9 @@ public class ColorImageFrame extends JPanel {
 	private int pixelSize;
 	private int windowX, windowY;
 	private int selected;
+	private Color backgroundColor;
 
-	public ColorImageFrame(int width, int height) {
+	public ColorImageFrame(int width, int height, Color backgroundColor) {
 		this.pixels = new int[0];
 		this.arrayWidth = 0;
 		this.arrayHeight = 0;
@@ -30,6 +31,7 @@ public class ColorImageFrame extends JPanel {
 		this.windowX = 100;
 		this.windowY = 100;
 		this.selected = -1;
+		this.backgroundColor = backgroundColor;
 
 		setPreferredSize(new Dimension(width, height));
 
@@ -121,7 +123,7 @@ public class ColorImageFrame extends JPanel {
 	}
 
 	public void paintComponent(Graphics g) {
-		g.setColor(new Color(1, 7, 18));
+		g.setColor(this.backgroundColor);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		g.setColor(Color.GRAY);

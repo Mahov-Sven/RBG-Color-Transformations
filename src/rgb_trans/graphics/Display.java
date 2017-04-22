@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -30,8 +31,16 @@ public class Display {
 	private int HEIGHT;
 	private static final long NANO = 1000000000;
 	
+	private static Color backgroundColor = new Color(1, 7, 18);
+	private static Color backgroundColor1 = new Color(19, 23, 31);
+	private static Color borderColor = new Color(28, 31, 38);
+	private static Color borderColor1 = new Color(36, 38, 45);
+	private static Color textColor = new Color(150, 18, 39);
+	
 	private ColorImageFrame imageFrame;
 	private JPanel sideBar;
+	private JPanel buttonContainer;
+	private JLabel buttonHeader;
 	private JButton brightnessButton;
 	private JButton luminanceButton;
 	private JButton saturationButton;
@@ -76,13 +85,21 @@ public class Display {
 		menu.add(centerImageItem);
 		menuBar.add(menu);
 		
-		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT);
+		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT, backgroundColor);
 		
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
-		sideBar.setLayout(new GridLayout(10,1));
-		sideBar.setBackground(new Color(19, 23, 31));
 		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
+		sideBar.setBackground(backgroundColor1);
+		
+		buttonHeader = new JLabel("Color Transformations");
+		buttonHeader.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/32));
+		
+		buttonContainer = new JPanel();
+		buttonContainer.setLayout(new GridLayout(10,1));
+		buttonContainer.setBackground(backgroundColor1);
+		buttonContainer.setPreferredSize(new Dimension(WIDTH/4, 31*HEIGHT/32));
+		
 		
 		//Creates the buttons and adds them to the sidebar.
 		brightnessButton = new JButton("Change Brightness");
@@ -90,13 +107,15 @@ public class Display {
 		saturationButton = new JButton("Change Saturation");
 		offsetButton = new JButton("Change Offset");
 		rotationButton = new JButton("Change Rotation");
-
-		sideBar.add(brightnessButton);
-		sideBar.add(luminanceButton);
-		sideBar.add(saturationButton);
-		sideBar.add(offsetButton);
-		sideBar.add(rotationButton);
 		
+		buttonContainer.add(brightnessButton);
+		buttonContainer.add(luminanceButton);
+		buttonContainer.add(saturationButton);
+		buttonContainer.add(offsetButton);
+		buttonContainer.add(rotationButton);
+		
+		sideBar.add(buttonHeader, BorderLayout.PAGE_START);
+		sideBar.add(buttonContainer);
 		
 		JFrame frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

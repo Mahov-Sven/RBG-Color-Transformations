@@ -1,5 +1,6 @@
 package rgb_trans.test;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -27,7 +28,7 @@ public class TestMainSven {
 	private static ColorImageFrame imageFrame;
 
 	public static void main(String... args){
-		imageFrame = new ColorImageFrame(WIDTH, HEIGHT);
+		imageFrame = new ColorImageFrame(WIDTH, HEIGHT, Color.BLACK);
 		
 		JFrame frame = new JFrame("Title");
 		
