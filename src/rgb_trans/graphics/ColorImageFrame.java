@@ -17,7 +17,7 @@ public class ColorImageFrame extends JPanel {
 
 	private int[] pixels;
 	private int arrayWidth, arrayHeight;
-	
+
 	private int pixelSize;
 	private int windowX, windowY;
 	private int selected;
@@ -75,46 +75,50 @@ public class ColorImageFrame extends JPanel {
 		addMouseMotionListener(mouseAdapter);
 		addMouseWheelListener(mouseAdapter);
 	}
-	
-	public void centerPosition(){
+
+	public void centerPosition() {
 		this.windowX = this.getWidth() / 2 - arrayWidth * pixelSize / 2;
 		this.windowY = this.getHeight() / 2 - arrayHeight * pixelSize / 2;
-		
+
 		repaint();
 	}
-	
-	private void clickSelected(int x, int y){
+
+	private void clickSelected(int x, int y) {
 		int pixelX = selected % arrayWidth;
 		int pixelY = selected / arrayHeight;
-
-		if (x < windowX || y < windowY || x > windowX + arrayWidth * pixelSize
-				|| y > windowY + arrayWidth * pixelSize
-				|| (x > pixelX && y > pixelY && x < pixelX + pixelSize && y < pixelY + pixelSize)) {
+		System.out.println("pixelX: " + pixelX + ", x:" + x);
+		if (x < windowX || y < windowY || x > windowX + arrayWidth * pixelSize || y > windowY + arrayWidth * pixelSize
+				|| (x > windowX + pixelX * pixelSize && y > windowY + pixelY * pixelSize
+						&& x < windowX + (pixelX + 1) * pixelSize && y < windowY + (pixelY + 1) * pixelSize)) {
 			selected = -1;
 		} else {
 			x -= windowX;
 			y -= windowY;
 			x /= pixelSize;
 			y /= pixelSize;
-			
+
 			selected = y * arrayWidth + x;
 		}
-		
+
 		repaint();
 	}
-	
-	public Color getSelectedColor(){
+
+	public Color getSelectedColor() {
 		return new Color(pixels[selected]);
 	}
-	
-	public int getSelectedX(){
+
+	public int getSelectedX() {
 		return selected % arrayWidth;
 	}
-	
-	public int getSelectedY(){
+
+	public int getSelectedY() {
 		return selected / arrayHeight;
 	}
-	
+
+	public int[] getPixels() {
+		return pixels;
+	}
+
 	public void moveImage(int deltaX, int deltaY) {
 		windowX += deltaX;
 		windowY += deltaY;
@@ -130,32 +134,32 @@ public class ColorImageFrame extends JPanel {
 		g.fillRect(windowX - BORDER_SIZE, windowY - BORDER_SIZE, arrayWidth * pixelSize + 2 * BORDER_SIZE,
 				arrayHeight * pixelSize + 2 * BORDER_SIZE);
 
-		int drawing = 0;
 		for (int y = 0; y < arrayHeight; y++) {
 			for (int x = 0; x < arrayWidth; x++) {
-				if(selected == y * arrayWidth + x || windowX + (x + 1) * pixelSize < 0 || windowY + (y + 1) * pixelSize < 0 || windowX + x * pixelSize > getWidth() || windowY + y * pixelSize > getHeight())
+				if (selected == y * arrayWidth + x || windowX + (x + 1) * pixelSize < 0
+						|| windowY + (y + 1) * pixelSize < 0 || windowX + x * pixelSize > getWidth()
+						|| windowY + y * pixelSize > getHeight())
 					continue;
-				
-				drawing++;
+
 				g.setColor(new Color(pixels[y * arrayWidth + x]));
 				g.fillRect(windowX + x * pixelSize, windowY + y * pixelSize, pixelSize, pixelSize);
 			}
 		}
-		System.out.println(drawing);
-		
-		if(selected >= 0){
+
+		if (selected >= 0) {
 			int x = selected % arrayWidth;
 			int y = selected / arrayHeight;
-			
+
 			g.setColor(Color.LIGHT_GRAY);
-			g.fillRect(windowX - SELECTED_BORDER_SIZE + x * pixelSize, windowY - SELECTED_BORDER_SIZE + y * pixelSize, pixelSize + 2 * SELECTED_BORDER_SIZE, pixelSize + 2 * SELECTED_BORDER_SIZE);
-		
+			g.fillRect(windowX - SELECTED_BORDER_SIZE + x * pixelSize, windowY - SELECTED_BORDER_SIZE + y * pixelSize,
+					pixelSize + 2 * SELECTED_BORDER_SIZE, pixelSize + 2 * SELECTED_BORDER_SIZE);
+
 			g.setColor(new Color(pixels[selected]));
 			g.fillRect(windowX + x * pixelSize, windowY + y * pixelSize, pixelSize, pixelSize);
 		}
 	}
 
-	public boolean pixelSelected(){
+	public boolean pixelSelected() {
 		return selected > -1 ? true : false;
 	}
 
