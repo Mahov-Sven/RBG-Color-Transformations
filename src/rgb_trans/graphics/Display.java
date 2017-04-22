@@ -3,6 +3,7 @@ package rgb_trans.graphics;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout.Alignment;
 
 public class Display {
 
@@ -57,6 +61,9 @@ public class Display {
 	}
 	
 	public void drawMain(){
+		JFrame frame = new JFrame("Title");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");
 		openFileItem = new JMenuItem("Open Image");
@@ -93,10 +100,12 @@ public class Display {
 		sideBar.setBackground(backgroundColor1);
 		
 		buttonHeader = new JLabel("Color Transformations");
-		buttonHeader.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/32));
+		buttonHeader.setHorizontalTextPosition(JLabel.CENTER);
+		buttonHeader.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
+		buttonHeader.setForeground(textColor);
 		
 		buttonContainer = new JPanel();
-		buttonContainer.setLayout(new GridLayout(10,1));
+		//buttonContainer.setLayout(new GridLayout(10,1));
 		buttonContainer.setBackground(backgroundColor1);
 		buttonContainer.setPreferredSize(new Dimension(WIDTH/4, 31*HEIGHT/32));
 		
@@ -108,30 +117,145 @@ public class Display {
 		offsetButton = new JButton("Change Offset");
 		rotationButton = new JButton("Change Rotation");
 		
-		buttonContainer.add(brightnessButton);
-		buttonContainer.add(luminanceButton);
-		buttonContainer.add(saturationButton);
-		buttonContainer.add(offsetButton);
-		buttonContainer.add(rotationButton);
+		brightnessButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		luminanceButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		saturationButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		offsetButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		rotationButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		
+		brightnessButton.setForeground(textColor);
+		luminanceButton.setForeground(textColor);
+		saturationButton.setForeground(textColor);
+		offsetButton.setForeground(textColor);
+		rotationButton.setForeground(textColor);
+		
+		brightnessButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 brightnessPress();
+			 }
+		});
+		luminanceButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 luminancePress();
+			 }
+		});
+		saturationButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 saturationPress();
+			 }
+		});
+		offsetButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 offsetPress();
+			 }
+		});
+		rotationButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 rotationPress();
+			 }
+		});
+		
+		brightnessButton.setName("brightness");
+		luminanceButton.setName("luminance");
+		saturationButton.setName("saturation");
+		offsetButton.setName("offset");
+		rotationButton.setName("rotation");
+		
+		buttonContainer.add(brightnessButton, BorderLayout.CENTER);
+		buttonContainer.add(luminanceButton, BorderLayout.CENTER);
+		buttonContainer.add(saturationButton, BorderLayout.CENTER);
+		buttonContainer.add(offsetButton, BorderLayout.CENTER);
+		buttonContainer.add(rotationButton, BorderLayout.CENTER);
 		
 		sideBar.add(buttonHeader, BorderLayout.PAGE_START);
 		sideBar.add(buttonContainer);
 		
-		JFrame frame = new JFrame("Title");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1920, 1080);
+		
 		frame.setJMenuBar(menuBar);
 		frame.add(imageFrame);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
-		//frame.pack();
+		frame.pack();
 		frame.setVisible(true);
 		
 		int[] pixels = {6556160, 2660, 680960, 0};
 		imageFrame.setPixels(pixels, 2, 2);
+		
 		run();
 	}
-
+	
+	private void brightnessPress(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != null){
+				buttonContainer.add(new JPanel(), i+1);
+				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				break;
+			}else if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() == null){
+				buttonContainer.remove(i+1);
+				break;
+			}
+		}
+		buttonContainer.validate();
+	}
+	
+	private void luminancePress(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			if(buttonContainer.getComponent(i).getName() == "luminance" && buttonContainer.getComponent(i + 1).getName() != null){
+				buttonContainer.add(new JPanel(), i+1);
+				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				break;
+			}else if(buttonContainer.getComponent(i).getName() == "luminance" && buttonContainer.getComponent(i + 1).getName() == null){
+				buttonContainer.remove(i+1);
+				break;
+			}
+		}
+		buttonContainer.validate();
+	}
+	
+	private void saturationPress(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != null){
+				buttonContainer.add(new JPanel(), i+1);
+				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				break;
+			}else if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() == null){
+				buttonContainer.remove(i+1);
+				break;
+			}
+		}
+		buttonContainer.validate();
+	}
+	
+	private void offsetPress(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() != null){
+				buttonContainer.add(new JPanel(), i+1);
+				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				break;
+			}else if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() == null){
+				buttonContainer.remove(i+1);
+				break;
+			}
+		}
+		buttonContainer.validate();
+	}
+	
+	private void rotationPress(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			try{
+				if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() == null){
+					buttonContainer.remove(i+1);
+					break;
+				}
+			}catch(ArrayIndexOutOfBoundsException e){
+				buttonContainer.add(new JPanel(), i+1);
+				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+			}
+		}
+		buttonContainer.validate();
+	}
+	
+	
 	private static void run(){
 		boolean running = true;
 		long lastUpTime = System.nanoTime();
