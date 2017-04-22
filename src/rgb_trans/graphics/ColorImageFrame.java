@@ -74,6 +74,13 @@ public class ColorImageFrame extends JPanel {
 		addMouseWheelListener(mouseAdapter);
 	}
 	
+	public void centerPosition(){
+		this.windowX = this.getWidth()/2;
+		this.windowY = this.getHeight()/2;
+		
+		repaint();
+	}
+	
 	private void clickSelected(int x, int y){
 		int pixelX = selected % arrayWidth;
 		int pixelY = selected / arrayHeight;

@@ -4,9 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 public class Display {
@@ -28,8 +37,10 @@ public class Display {
 	private JButton saturationButton;
 	private JButton offsetButton;
 	private JButton rotationButton;
-	
-	
+	private JMenuBar menuBar;
+	private JMenu menu;
+	private JMenuItem openFileItem;
+	private JMenuItem centerImageItem;
 	
 	public Display(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
@@ -37,6 +48,34 @@ public class Display {
 	}
 	
 	public void drawMain(){
+		menuBar = new JMenuBar();
+		menu = new JMenu("File");
+		openFileItem = new JMenuItem("Open Image");
+		openFileItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				JFileChooser openDialog = new JFileChooser();
+				if(openDialog.showOpenDialog(null) == JFileChooser.APPROVE_OPTION){
+					try{
+						BufferedImage img = ImageIO.read(openDialog.getSelectedFile());
+						int pixels[] = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
+						imageFrame.setPixels(pixels, img.getWidth(), img.getHeight());
+					} catch (IOException ex){
+						ex.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		centerImageItem = new JMenuItem("Center Image");
+		centerImageItem.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				imageFrame.centerPosition();
+			}
+		});
+		menu.add(openFileItem);
+		menu.add(centerImageItem);
+		menuBar.add(menu);
+		
 		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT);
 		
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
@@ -62,6 +101,7 @@ public class Display {
 		JFrame frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1920, 1080);
+		frame.setJMenuBar(menuBar);
 		frame.add(imageFrame);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
@@ -70,7 +110,6 @@ public class Display {
 		
 		int[] pixels = {6556160, 2660, 680960, 0};
 		imageFrame.setPixels(pixels, 2, 2);
-		
 		run();
 	}
 
