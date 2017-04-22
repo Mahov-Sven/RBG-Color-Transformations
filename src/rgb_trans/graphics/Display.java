@@ -19,9 +19,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout.Alignment;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class Display {
 
@@ -54,6 +54,7 @@ public class Display {
 	private JMenu menu;
 	private JMenuItem openFileItem;
 	private JMenuItem centerImageItem;
+	private int[] brightnessSliders = {50, 50, 50};
 	
 	public Display(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
@@ -105,7 +106,6 @@ public class Display {
 		buttonHeader.setForeground(textColor);
 		
 		buttonContainer = new JPanel();
-		//buttonContainer.setLayout(new GridLayout(10,1));
 		buttonContainer.setBackground(backgroundColor1);
 		buttonContainer.setPreferredSize(new Dimension(WIDTH/4, 31*HEIGHT/32));
 		
@@ -184,11 +184,55 @@ public class Display {
 		run();
 	}
 	
+	private void storeSliderValues(String sliderText, int sliderValue){
+		if (sliderText == "Red:"){
+			brightnessSliders[0] = sliderValue;
+		}else if (sliderText == "Green:"){
+			brightnessSliders[1] = sliderValue;
+		}else if (sliderText == "Blue:"){
+			brightnessSliders[2] = sliderValue;
+		}
+	}
+	
+	private int getSliderValues(String sliderText){
+		if (sliderText == "Red:"){
+			return brightnessSliders[0];
+		}else if (sliderText == "Green:"){
+			return brightnessSliders[1];
+		}else if (sliderText == "Blue:"){
+			return brightnessSliders[2];
+		}else{
+			return 50;
+		}
+	}
+	
+	private JPanel createColorSlider(String text){
+		JPanel colorPanel = new JPanel();
+		colorPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
+		JLabel label = new JLabel(text);
+		JSlider slider = new JSlider(0, 100, getSliderValues(text));
+		slider.addChangeListener(new ChangeListener(){
+			public void stateChanged(ChangeEvent e){
+				storeSliderValues(label.getText(), slider.getValue());
+				System.out.println(slider.getValue());
+			}
+		});
+		colorPanel.add(label, BorderLayout.LINE_START);
+		colorPanel.add(slider, BorderLayout.LINE_END);
+		return colorPanel;
+	}
 	private void brightnessPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != null){
-				buttonContainer.add(new JPanel(), i+1);
-				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				JPanel panel = new JPanel();
+				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/25));
+				JPanel redPanel = createColorSlider("Red:");
+				JPanel greenPanel = createColorSlider("Green:");
+				JPanel bluePanel = createColorSlider("Blue:");
+				panel.add(redPanel, BorderLayout.CENTER);
+				panel.add(greenPanel, BorderLayout.CENTER);
+				panel.add(bluePanel, BorderLayout.CENTER);
+				buttonContainer.add(panel, i+1);
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() == null){
 				buttonContainer.remove(i+1);
@@ -250,6 +294,7 @@ public class Display {
 			}catch(ArrayIndexOutOfBoundsException e){
 				buttonContainer.add(new JPanel(), i+1);
 				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				break;
 			}
 		}
 		buttonContainer.validate();
