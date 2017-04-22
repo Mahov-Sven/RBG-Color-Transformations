@@ -130,15 +130,18 @@ public class ColorImageFrame extends JPanel {
 		g.fillRect(windowX - BORDER_SIZE, windowY - BORDER_SIZE, arrayWidth * pixelSize + 2 * BORDER_SIZE,
 				arrayHeight * pixelSize + 2 * BORDER_SIZE);
 
+		int drawing = 0;
 		for (int y = 0; y < arrayHeight; y++) {
 			for (int x = 0; x < arrayWidth; x++) {
-				if(selected == y * arrayWidth + x)
+				if(selected == y * arrayWidth + x || windowX + (x + 1) * pixelSize < 0 || windowY + (y + 1) * pixelSize < 0 || windowX + x * pixelSize > getWidth() || windowY + y * pixelSize > getHeight())
 					continue;
 				
+				drawing++;
 				g.setColor(new Color(pixels[y * arrayWidth + x]));
 				g.fillRect(windowX + x * pixelSize, windowY + y * pixelSize, pixelSize, pixelSize);
 			}
 		}
+		System.out.println(drawing);
 		
 		if(selected >= 0){
 			int x = selected % arrayWidth;
