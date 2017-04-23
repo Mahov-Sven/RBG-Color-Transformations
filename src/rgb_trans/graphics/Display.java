@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -22,6 +23,10 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import rgb_trans.util.math.ColorTransformationMaths;
+import rgb_trans.util.math.Mat4f;
+import rgb_trans.util.math.Vec4f;
 
 public class Display {
 
@@ -75,7 +80,7 @@ public class Display {
 					try{
 						BufferedImage img = ImageIO.read(openDialog.getSelectedFile());
 						int pixels[] = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
-						imageFrame.setPixels(pixels, img.getWidth(), img.getHeight());
+						imageFrame.setBasePixels(pixels, img.getWidth(), img.getHeight());
 					} catch (IOException ex){
 						ex.printStackTrace();
 					}
@@ -179,7 +184,7 @@ public class Display {
 		frame.setVisible(true);
 		
 		int[] pixels = {6556160, 2660, 680960, 0};
-		imageFrame.setPixels(pixels, 2, 2);
+		imageFrame.setBasePixels(pixels, 2, 2);
 		
 		run();
 	}
@@ -208,30 +213,64 @@ public class Display {
 	
 	private JPanel createColorSlider(String text){
 		JPanel colorPanel = new JPanel();
+		colorPanel.setBackground(backgroundColor1);
 		colorPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
 		JLabel label = new JLabel(text);
+		label.setForeground(textColor);
 		JSlider slider = new JSlider(0, 100, getSliderValues(text));
+		slider.setBackground(backgroundColor1);
 		slider.addChangeListener(new ChangeListener(){
 			public void stateChanged(ChangeEvent e){
 				storeSliderValues(label.getText(), slider.getValue());
-				System.out.println(slider.getValue());
+				brightnessChange();
 			}
 		});
-		colorPanel.add(label, BorderLayout.LINE_START);
-		colorPanel.add(slider, BorderLayout.LINE_END);
+		colorPanel.add(label);
+		colorPanel.add(slider);
 		return colorPanel;
 	}
+	
+	private void brightnessChange(){
+		Mat4f transformation = ColorTransformationMaths.brightnessMatrix(brightnessSliders[0]/50f, brightnessSliders[1]/50f, brightnessSliders[2]/50f);
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+			color = Mat4f.mul(transformation, color);
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		}
+		imageFrame.setPixels(pixelArray);
+	}
+	
 	private void brightnessPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != null){
 				JPanel panel = new JPanel();
-				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/25));
+				panel.setBackground(backgroundColor1);
+				panel.setPreferredSize(new Dimension(WIDTH/4, 4 * HEIGHT/24));
 				JPanel redPanel = createColorSlider("Red:");
 				JPanel greenPanel = createColorSlider("Green:");
 				JPanel bluePanel = createColorSlider("Blue:");
+				JPanel resetPanel = new JPanel();
+				resetPanel.setBackground(backgroundColor1);
+				JButton reset = new JButton("Reset");
+				reset.setForeground(textColor);
+				reset.addActionListener(new ActionListener(){
+					 public void actionPerformed(ActionEvent e){
+						 brightnessSliders[0] = 50;
+						 brightnessSliders[1] = 50;
+						 brightnessSliders[2] = 50;
+						 brightnessChange();
+						 ((JSlider) redPanel.getComponent(1)).setValue(50);
+						 ((JSlider) bluePanel.getComponent(1)).setValue(50);
+						 ((JSlider) greenPanel.getComponent(1)).setValue(50);
+					 }
+				});
+				resetPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
+				resetPanel.add(reset);
 				panel.add(redPanel, BorderLayout.CENTER);
 				panel.add(greenPanel, BorderLayout.CENTER);
 				panel.add(bluePanel, BorderLayout.CENTER);
+				panel.add(resetPanel, BorderLayout.CENTER);
 				buttonContainer.add(panel, i+1);
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() == null){
