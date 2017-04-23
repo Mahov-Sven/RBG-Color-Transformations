@@ -22,13 +22,13 @@ public class ColorTransformationMaths {
 	}
 	
 	public static Mat4f luminanceMatrix(){
-		float redWeight = 0.3086f;
-		float greenWeight = 0.6094f;
-		float blueWeight = 0.0820f;
+		float redWeight = 0.299f;
+		float greenWeight = 0.587f;
+		float blueWeight = 0.114f;
 		return new Mat4f(
-				redWeight, 		redWeight, 		redWeight, 		0,
-				greenWeight, 	greenWeight, 	greenWeight, 	0,
-				blueWeight, 	blueWeight, 	blueWeight, 	0,
+				redWeight, 		greenWeight, 	blueWeight, 	0,
+				redWeight, 		greenWeight, 	blueWeight, 	0,
+				redWeight, 		greenWeight, 	blueWeight, 	0,
 				0, 				0, 				0, 				1
 				);
 	}
