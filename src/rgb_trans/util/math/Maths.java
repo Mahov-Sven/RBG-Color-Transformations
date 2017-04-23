@@ -1,9 +1,16 @@
 package rgb_trans.util.math;
 
+import java.util.Random;
+
 import rgb_trans.main.RGBCT;
 import rgb_trans.util.Util;
 
 public class Maths {
+	
+	public static int randColorInt(){
+		Random random = new Random();
+		return random.nextInt(16777216);
+	}
 	
 	public static float clamp(float numb){
 		return clamp(numb, 0, 1);

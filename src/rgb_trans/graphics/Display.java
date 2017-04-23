@@ -26,6 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import rgb_trans.util.math.ColorTransformationMaths;
 import rgb_trans.util.math.Mat4f;
+import rgb_trans.util.math.Maths;
 import rgb_trans.util.math.Vec4f;
 
 public class Display {
@@ -239,8 +240,12 @@ public class Display {
 		frame.pack();
 		frame.setVisible(true);
 		
-		int[] pixels = {6556160, 2660, 680960, 0};
-		imageFrame.setBasePixels(pixels, 2, 2);
+		int[] pixels = new int[64];
+		for(int i = 0; i < pixels.length; i++){
+			pixels[i] = Maths.randColorInt();
+		}
+		
+		imageFrame.setBasePixels(pixels, 8, 8);
 	}
 	
 	private void storeSliderValues(String sliderText, int sliderValue){
@@ -470,10 +475,6 @@ public class Display {
 				break;
 			}
 		}
-		if(imageFrame.pixelSelected()){
-			graphFrame.setColor(imageFrame.getSelectedColor());
-			updateColorEditor();
-		}
 		
 		buttonContainer.validate();
 	}
@@ -487,6 +488,11 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
+		
+		if(imageFrame.pixelSelected()){
+			graphFrame.setColor(imageFrame.getSelectedColor());
+			updateColorEditor();
+		}
 	}
 	
 	private void rotationPress(){
