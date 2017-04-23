@@ -67,6 +67,7 @@ public class Display {
 	private int[] brightnessSliders = {50, 50, 50};
 	private int saturationSliders = 50;
 	private int[] offsetSliders = {0, 0, 0};
+	private int rotationSliders = 0;
 	
 	private int screen = 0;
 	
@@ -436,17 +437,44 @@ public class Display {
 		buttonContainer.validate();
 	}
 	
+	private void rotationChange(){
+		Mat4f transformation = ColorTransformationMaths.rotationMatrix(rotationSliders/1f);
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+			color = Mat4f.mul(transformation, color);
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		}
+		imageFrame.setPixels(pixelArray);
+	}
+	
 	private void rotationPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() != null){
-				buttonContainer.add(new JPanel(), i+1);
-				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+			if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() != "rotationPanel"){
+				JPanel panel = new JPanel();
+				panel.setBackground(backgroundColor1);
+				panel.setPreferredSize(new Dimension(WIDTH/4,HEIGHT/24));
+				panel.setLayout(new GridLayout(0, 3));
+				panel.setName("rotationPanel");
+				JLabel label = new JLabel("Rotation");
+				label.setForeground(textColor);
+				label.setHorizontalAlignment(JLabel.RIGHT);
+				JSlider rotationSlider = new JSlider(0, 360, rotationSliders);
+				rotationSlider.setBackground(backgroundColor1);
+				rotationSlider.addChangeListener(new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						rotationSliders = rotationSlider.getValue();
+						rotationChange();
+					}
+				});
+				panel.add(label);
+				panel.add(rotationSlider);
+				buttonContainer.add(panel, i+1);
 				break;
-			}else if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() == null){
-				buttonContainer.remove(i+1);
+			}else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
+				buttonContainer.remove(i);
 				break;
 			}
-			buttonContainer.validate();
 		}
 		buttonContainer.validate();
 	}
@@ -459,6 +487,7 @@ public class Display {
 		 offsetSliders[0] = 0;
 		 offsetSliders[1] = 0;
 		 offsetSliders[2] = 0;
+		 rotationSliders = 0;
 		 brightnessChange();
 		 offsetChange();
 		 for (int i=0; i<buttonContainer.getComponentCount(); i++){
@@ -473,6 +502,8 @@ public class Display {
 				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(0);
 				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(0);
 				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(0);
+			 }else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
+				 (((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(0);
 			 }
 		}
 	}
