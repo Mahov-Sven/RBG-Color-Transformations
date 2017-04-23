@@ -74,6 +74,8 @@ public class Display {
 	private int saturationSliders = 50;
 	private int[] offsetSliders = {0, 0, 0};
 	private int rotationSliders = 0;
+	private Mat4f[] appliedTransformations = {null, null, null, null, null};
+	private int[] transformationIndeces = {-1, -1, -1, -1, -1};
 	
 	private int screen = 0;
 	
@@ -297,13 +299,8 @@ public class Display {
 	
 	private void brightnessChange(){
 		Mat4f transformation = ColorTransformationMaths.brightnessMatrix(brightnessSliders[0]/50f, brightnessSliders[1]/50f, brightnessSliders[2]/50f);
-		int[] pixelArray = imageFrame.getBasePixels().clone();
-		for (int i = 0; i<pixelArray.length; i++){
-			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
-			color = Mat4f.mul(transformation, color);
-			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
-		}
-		imageFrame.setPixels(pixelArray);
+		addTransformation("brightness", transformation);
+		applyTransformations();
 		
 		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
@@ -343,13 +340,14 @@ public class Display {
 		closePanel();
 		buttonContainer.revalidate();
 		Mat4f transformation = ColorTransformationMaths.luminanceMatrix();
-		int[] pixelArray = imageFrame.getBasePixels().clone();
-		for (int i = 0; i<pixelArray.length; i++){
-			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
-			color = Mat4f.mul(transformation, color);
-			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		int index = getTransformationIndex("luminance");
+		if(transformationIndeces[index] < 0){
+			addTransformation("luminance", transformation);
+			applyTransformations();
+		}else{
+			removeTransformation("luminance");
 		}
-		imageFrame.setPixels(pixelArray);
+		
 		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
 			updateColorEditor();
@@ -358,13 +356,9 @@ public class Display {
 	
 	private void saturationChange(){
 		Mat4f transformation = ColorTransformationMaths.saturationMatrix(saturationSliders/50f);
-		int[] pixelArray = imageFrame.getBasePixels().clone();
-		for (int i = 0; i<pixelArray.length; i++){
-			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
-			color = Mat4f.mul(transformation, color);
-			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
-		}
-		imageFrame.setPixels(pixelArray);
+		addTransformation("saturation", transformation);
+		applyTransformations();
+		
 		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
 			updateColorEditor();
@@ -452,13 +446,8 @@ public class Display {
 	
 	private void offsetChange(){
 		Mat4f transformation = ColorTransformationMaths.offsetMatrix(offsetSliders[0]/50f, offsetSliders[1]/50f, offsetSliders[2]/50f);
-		int[] pixelArray = imageFrame.getBasePixels().clone();
-		for (int i = 0; i<pixelArray.length; i++){
-			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
-			color = Mat4f.mul(transformation, color);
-			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
-		}
-		imageFrame.setPixels(pixelArray);
+		addTransformation("offset", transformation);
+		applyTransformations();
 		
 		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
@@ -498,13 +487,8 @@ public class Display {
 	
 	private void rotationChange(){
 		Mat4f transformation = ColorTransformationMaths.rotationMatrix(rotationSliders/1f);
-		int[] pixelArray = imageFrame.getBasePixels().clone();
-		for (int i = 0; i<pixelArray.length; i++){
-			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
-			color = Mat4f.mul(transformation, color);
-			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
-		}
-		imageFrame.setPixels(pixelArray);
+		addTransformation("rotation", transformation);
+		applyTransformations();
 		
 		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
@@ -565,31 +549,32 @@ public class Display {
 	
 	
 	private void reset(){
-		 brightnessSliders[0] = 50;
-		 brightnessSliders[1] = 50;
-		 brightnessSliders[2] = 50;
-		 saturationSliders = 50;
-		 offsetSliders[0] = 0;
-		 offsetSliders[1] = 0;
-		 offsetSliders[2] = 0;
-		 rotationSliders = 0;
-		 brightnessChange();
-		 offsetChange();
-		 for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			 if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(50);
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(50);
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(50);
-			 }
-			 else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
-				 (((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(50);
-			 }else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(0);
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(0);
-				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(0);
-			 }else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
-				 (((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(0);
-			 }
+		resetTransformations();
+		brightnessSliders[0] = 50;
+		brightnessSliders[1] = 50;
+		brightnessSliders[2] = 50;
+		saturationSliders = 50;
+		offsetSliders[0] = 0;
+		offsetSliders[1] = 0;
+		offsetSliders[2] = 0;
+		rotationSliders = 0;
+		brightnessChange();
+		offsetChange();
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(50);
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(50);
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(50);
+			}
+			else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
+				(((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(50);
+			}else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(0);
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(0);
+				((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(0);
+			}else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
+				(((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(0);
+			}
 		}
 	}
 	
@@ -598,7 +583,6 @@ public class Display {
 		storeColorEditorValues("Red:", color.getRed() * 100 / 255);
 		storeColorEditorValues("Green:", color.getGreen() * 100 / 255);
 		storeColorEditorValues("Blue:", color.getBlue() * 100 / 255);
-		System.out.println(color);
 		((JSlider) editRed.getComponent(1)).setValue(getColorEditorValues("Red:"));
 		((JSlider) editGreen.getComponent(1)).setValue(getColorEditorValues("Green:"));
 		((JSlider) editBlue.getComponent(1)).setValue(getColorEditorValues("Blue:"));
@@ -651,6 +635,81 @@ public class Display {
 		colorEditorPanel.add(label);
 		colorEditorPanel.add(slider);
 		return colorEditorPanel;
+	}
+	
+	private void addTransformation(String transformation, Mat4f transformationMatrix){
+		int transformationIndex = getTransformationIndex(transformation);	
+		int index = transformationIndeces[transformationIndex];;
+		if(index < 0){
+			appendTransformation(transformationIndex, transformationMatrix);
+		}else{
+			appliedTransformations[index] = transformationMatrix;
+		}
+	}
+	
+	private int getTransformationIndex(String transformation){
+		if(transformation == "brightness"){
+			return 0;
+		}else if(transformation == "luminance"){
+			return 1;
+		}else if(transformation == "saturation"){
+			return 2;
+		}else if(transformation == "offset"){
+			return 3;
+		}else if(transformation == "rotation"){
+			return 4;
+		}
+		return -1;
+	}
+	
+	private void appendTransformation(int transformationIndex, Mat4f transformationMatrix){
+		for(int i = 0; i < appliedTransformations.length; i++){
+			if(appliedTransformations[i] == null){
+				appliedTransformations[i] = transformationMatrix;
+				transformationIndeces[transformationIndex] = i;
+				return;
+			}
+		}
+	}
+	
+	private void applyTransformations(){
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+
+			for(Mat4f transformation:appliedTransformations){
+				if(transformation == null) 
+					continue;
+				
+				color = Mat4f.mul(transformation, color);
+			}
+			
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		}
+		
+		imageFrame.setPixels(pixelArray);
+		
+		//colorEditorChange()
+	}
+	
+	private void removeTransformation(String transformation){
+		int transformationIndex = getTransformationIndex(transformation);
+		
+		for(int i = 0; i < transformationIndeces.length; i++){
+			if(transformationIndeces[i] > transformationIndeces[transformationIndex]){
+				transformationIndeces[i]--;
+			}
+		}
+		
+		appliedTransformations[transformationIndeces[transformationIndex]] = null;
+		transformationIndeces[transformationIndex] = -1;
+		
+		applyTransformations();
+	}
+	
+	private void resetTransformations(){
+		transformationIndeces = new int[]{-1, -1, -1, -1, -1};
+		appliedTransformations = new Mat4f[]{null, null, null, null, null};
 	}
 	
 	public void toggleScreen(int nextScreen){
