@@ -51,7 +51,7 @@ public class TestMainSven {
 					try{
 						BufferedImage img = ImageIO.read(openDialog.getSelectedFile());
 						int pixels[] = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());
-						imageFrame.setPixels(pixels, img.getWidth(), img.getHeight());
+						imageFrame.setBasePixels(pixels, img.getWidth(), img.getHeight());
 					} catch (IOException ex){
 						ex.printStackTrace();
 					}
@@ -70,7 +70,7 @@ public class TestMainSven {
 		frame.setVisible(true);
 		
 		int[] pixels = {6556160, 2660, 680960, 0};
-		imageFrame.setPixels(pixels, 2, 2);
+		imageFrame.setBasePixels(pixels, 2, 2);
 		
 		Vec4f colorVec = ColorTransformationMaths.loadColorToVec4f(color);
 		Mat4f rotMat = ColorTransformationMaths.rotationMatrix(350);

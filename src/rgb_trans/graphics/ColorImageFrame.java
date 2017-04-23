@@ -15,6 +15,7 @@ public class ColorImageFrame extends JPanel {
 	private static final int BORDER_SIZE = 10;
 	private static final int SELECTED_BORDER_SIZE = 8;
 
+	private int[] basePixels;
 	private int[] pixels;
 	private int arrayWidth, arrayHeight;
 
@@ -114,6 +115,10 @@ public class ColorImageFrame extends JPanel {
 	public int getSelectedY() {
 		return selected / arrayHeight;
 	}
+	
+	public int[] getBasePixels(){
+		return basePixels;
+	}
 
 	public int[] getPixels() {
 		return pixels;
@@ -168,12 +173,18 @@ public class ColorImageFrame extends JPanel {
 
 		repaint();
 	}
-
-	public void setPixels(int[] pixels, int width, int height) {
+	
+	public void setBasePixels(int[] pixels, int width, int height){
 		this.selected = -1;
-		this.pixels = pixels;
+		this.basePixels = pixels;
 		this.arrayWidth = width;
 		this.arrayHeight = height;
+		
+		setPixels(pixels);
+	}
+
+	public void setPixels(int[] pixels) {
+		this.pixels = pixels;
 
 		repaint();
 	}
