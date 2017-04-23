@@ -325,18 +325,23 @@ public class Display {
 				panel.add(redPanel, BorderLayout.CENTER);
 				panel.add(greenPanel, BorderLayout.CENTER);
 				panel.add(bluePanel, BorderLayout.CENTER);
-				buttonContainer.add(panel, i+1);
+				if (buttonContainer.getComponent(i).getName() == "brightness"){
+					buttonContainer.add(panel, i+1);
+				}else{
+					buttonContainer.add(panel, i);
+				}
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
 				buttonContainer.remove(i);
 				break;
 			}
 		}
-		buttonContainer.validate();
+		buttonContainer.revalidate();
 	}
 	
 	private void luminancePress(){
 		closePanel();
+		buttonContainer.revalidate();
 		Mat4f transformation = ColorTransformationMaths.luminanceMatrix();
 		int[] pixelArray = imageFrame.getBasePixels().clone();
 		for (int i = 0; i<pixelArray.length; i++){
@@ -388,14 +393,18 @@ public class Display {
 				});
 				panel.add(label);
 				panel.add(saturationSlider);
-				buttonContainer.add(panel, i+1);
+				if (buttonContainer.getComponent(i).getName() == "saturation"){
+					buttonContainer.add(panel, i+1);
+				}else{
+					buttonContainer.add(panel, i);
+				}
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
 				buttonContainer.remove(i);
 				break;
 			}
 		}
-		buttonContainer.validate();
+		buttonContainer.revalidate();
 	}
 	
 	private void storeOffsetValues(String sliderText, int sliderValue){
@@ -472,7 +481,11 @@ public class Display {
 				panel.add(redPanel, BorderLayout.CENTER);
 				panel.add(greenPanel, BorderLayout.CENTER);
 				panel.add(bluePanel, BorderLayout.CENTER);
-				buttonContainer.add(panel, i+1);
+				if (buttonContainer.getComponent(i).getName() == "offset"){
+					buttonContainer.add(panel, i+1);
+				}else{
+					buttonContainer.add(panel, i);
+				}
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
 				buttonContainer.remove(i);
@@ -480,7 +493,7 @@ public class Display {
 			}
 		}
 		
-		buttonContainer.validate();
+		buttonContainer.revalidate();
 	}
 	
 	private void rotationChange(){
@@ -521,14 +534,18 @@ public class Display {
 				});
 				panel.add(label);
 				panel.add(rotationSlider);
-				buttonContainer.add(panel, i+1);
+				if (buttonContainer.getComponent(i).getName() == "brightness"){
+					buttonContainer.add(panel, i+1);
+				}else{
+					buttonContainer.add(panel, i);
+				}
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
 				buttonContainer.remove(i);
 				break;
 			}
 		}
-		buttonContainer.validate();
+		buttonContainer.revalidate();
 	}
 	
 	private void closePanel(){
