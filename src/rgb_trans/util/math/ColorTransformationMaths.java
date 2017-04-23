@@ -43,9 +43,9 @@ public class ColorTransformationMaths {
 		float satBlue = (1 - saturation) * blueWeight;
 		
 		return new Mat4f(
-				satRed + saturation, 	satRed, 				satRed, 				0,
-				satGeen, 				satGeen + saturation, 	satGeen, 				0,
-				satBlue, 				satBlue, 				satBlue + saturation, 	0,
+				satRed + saturation, 	satGeen, 				satBlue, 				0,
+				satRed, 				satGeen + saturation, 	satBlue, 				0,
+				satRed, 				satGeen, 				satBlue + saturation, 	0,
 				0, 						0, 						0, 						1
 				);
 	}
