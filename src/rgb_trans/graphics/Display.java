@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -48,6 +49,7 @@ public class Display {
 	
 	private ColorImageFrame imageFrame;
 	private ColorGraphFrame graphFrame;
+	private JPanel frameContainer;
 	private JPanel sideBar;
 	private JPanel buttonContainer;
 	private JLabel buttonHeader;
@@ -104,10 +106,15 @@ public class Display {
 		menu.add(centerImageItem);
 		menuBar.add(menu);
 		
+		frameContainer = new JPanel();
+		frameContainer.setLayout(new BoxLayout(frameContainer, BoxLayout.Y_AXIS));
+		
 		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT, backgroundColor, this);
 		
-		graphFrame = new ColorGraphFrame(HEIGHT, HEIGHT);
-		graphFrame.setPreferredSize(new Dimension(0, 0));
+		graphFrame = new ColorGraphFrame(0, 0);
+		
+		frameContainer.add(graphFrame);
+		frameContainer.add(imageFrame);
 		
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
@@ -196,8 +203,7 @@ public class Display {
 		
 		
 		frame.setJMenuBar(menuBar);
-		frame.add(graphFrame);
-		frame.add(imageFrame);
+		frame.add(frameContainer);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
 		frame.pack();
@@ -265,6 +271,9 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
+		
+		if(imageFrame.pixelSelected())
+			graphFrame.setColor(imageFrame.getSelectedColor());
 	}
 	
 	private void brightnessPress(){
@@ -378,13 +387,21 @@ public class Display {
 		switch(nextScreen){
 		/* To the Image Screen */
 		case 0:
-			imageFrame.setSize(3*WIDTH/4, HEIGHT);
-			graphFrame.setSize(0, 0);
+			graphFrame.setPreferredSize(new Dimension(0, 0));
+			imageFrame.setPreferredSize(new Dimension(3*WIDTH/4, HEIGHT));
+			frameContainer.revalidate();
+			
+			graphFrame.setColor(Color.BLACK);
+			
 			break;
 		/* To the Graph Screen */
 		case 1:
-			imageFrame.setSize(WIDTH / 2, HEIGHT / 2);
-			graphFrame.setSize(WIDTH / 2, HEIGHT / 2);
+			imageFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
+			graphFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
+			frameContainer.revalidate();
+			
+			graphFrame.setColor(imageFrame.getSelectedColor());
+			
 			break;
 		}
 		screen = nextScreen;
