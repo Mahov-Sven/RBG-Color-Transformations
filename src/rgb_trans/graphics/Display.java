@@ -52,6 +52,11 @@ public class Display {
 	private ColorGraphFrame graphFrame;
 	private JPanel frameContainer;
 	private JPanel sideBar;
+	private JPanel colorEditor;
+	private JLabel colorHeader;
+	private JPanel editRed;
+	private JPanel editGreen;
+	private JPanel editBlue;
 	private JPanel buttonContainer;
 	private JLabel buttonHeader;
 	private JButton brightnessButton;
@@ -110,17 +115,29 @@ public class Display {
 		menu.add(centerImageItem);
 		menuBar.add(menu);
 		
-		frameContainer = new JPanel();
-		frameContainer.setLayout(new BoxLayout(frameContainer, BoxLayout.Y_AXIS));
-		
 		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT, backgroundColor, this);
 		
 		graphFrame = new ColorGraphFrame(0, 0);
 		
-		frameContainer.add(graphFrame);
-		frameContainer.add(imageFrame);
+		//Creates a container to hold the GraphFrame and ImageFrame objects
+		frameContainer = new JPanel();
+		frameContainer.setLayout(new BoxLayout(frameContainer, BoxLayout.Y_AXIS));
 		
-		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
+		//Creates a sidebar using a JPanel used to edit the selected color
+		colorEditor = new JPanel();
+		colorEditor.setPreferredSize(new Dimension(0, 0));
+		colorEditor.setBackground(backgroundColor1);
+		
+		colorHeader = new JLabel("Edit Color");
+		colorHeader.setHorizontalTextPosition(JLabel.CENTER);
+		colorHeader.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
+		colorHeader.setForeground(textColor);
+		
+		editRed = createColorSlider("Red:");
+		editGreen = createColorSlider("Green:");
+		editBlue = createColorSlider("Blue:");
+		
+		//Creates a sidebar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
 		sideBar.setPreferredSize(new Dimension(WIDTH/4, HEIGHT));
 		sideBar.setBackground(backgroundColor1);
@@ -205,9 +222,18 @@ public class Display {
 		sideBar.add(buttonHeader, BorderLayout.PAGE_START);
 		sideBar.add(buttonContainer);
 		
+		frameContainer.add(graphFrame);
+		frameContainer.add(imageFrame);
+		
+		colorEditor.add(colorHeader);
+		colorEditor.add(editRed);
+		colorEditor.add(editGreen);
+		colorEditor.add(editBlue);
+		
 		
 		frame.setJMenuBar(menuBar);
-		frame.add(frameContainer);
+		frame.add(frameContainer, BorderLayout.LINE_START);
+		frame.add(colorEditor, BorderLayout.CENTER);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
 		frame.pack();
@@ -278,6 +304,7 @@ public class Display {
 		
 		if(imageFrame.pixelSelected())
 			graphFrame.setColor(imageFrame.getSelectedColor());
+		updateColorEditor();
 	}
 	
 	private void brightnessPress(){
@@ -312,6 +339,9 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
+		if(imageFrame.pixelSelected())
+			graphFrame.setColor(imageFrame.getSelectedColor());
+		updateColorEditor();
 	}
 	
 	private void saturationChange(){
@@ -323,6 +353,9 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
+		if(imageFrame.pixelSelected())
+			graphFrame.setColor(imageFrame.getSelectedColor());
+		updateColorEditor();
 	}
 	
 	private void saturationPress(){
@@ -527,11 +560,19 @@ public class Display {
 		}
 	}
 	
+	private void updateColorEditor(){
+		Color color = imageFrame.getSelectedColor();
+		((JSlider) editRed.getComponent(1)).setValue(color.getRed() * 100 / 255);
+		((JSlider) editGreen.getComponent(1)).setValue(color.getGreen() * 100 / 255);
+		((JSlider) editBlue.getComponent(1)).setValue(color.getBlue() * 100 / 255);
+	}
+	
 	public void toggleScreen(int nextScreen){
 		switch(nextScreen){
 		/* To the Image Screen */
 		case 0:
 			graphFrame.setPreferredSize(new Dimension(0, 0));
+			colorEditor.setPreferredSize(new Dimension(0, 0));
 			imageFrame.setPreferredSize(new Dimension(3*WIDTH/4, HEIGHT));
 			frameContainer.revalidate();
 			
@@ -541,11 +582,12 @@ public class Display {
 		/* To the Graph Screen */
 		case 1:
 			imageFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
+			colorEditor.setPreferredSize(new Dimension(WIDTH / 4, HEIGHT));
 			graphFrame.setPreferredSize(new Dimension(WIDTH / 2, HEIGHT / 2));
 			frameContainer.revalidate();
 			
 			graphFrame.setColor(imageFrame.getSelectedColor());
-			
+			updateColorEditor();
 			break;
 		}
 		screen = nextScreen;
