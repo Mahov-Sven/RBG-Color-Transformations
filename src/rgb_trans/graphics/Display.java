@@ -314,6 +314,7 @@ public class Display {
 	private void brightnessPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != "brightnessPanel"){
+				closePanel();
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
@@ -366,9 +367,9 @@ public class Display {
 	}
 	
 	private void saturationPress(){
-		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != "saturationPanel"){
+				closePanel();
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4,HEIGHT/24));
@@ -458,9 +459,9 @@ public class Display {
 	
 	
 	private void offsetPress(){
-		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() != "offsetPanel"){
+				closePanel();
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
@@ -499,9 +500,9 @@ public class Display {
 	}
 	
 	private void rotationPress(){
-		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() != "rotationPanel"){
+				closePanel();
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4,HEIGHT/24));
