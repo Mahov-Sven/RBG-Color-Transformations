@@ -14,7 +14,7 @@ public class ColorGraphFrame extends JPanel{
 	private Arrow redAxis, greenAxis, blueAxis, colorArrow;
 	
 	private static final int RED_ANGLE = 350;
-	private static final int GREEN_ANGLE = 230;
+	private static final int GREEN_ANGLE = 240;
 	private static final int BLUE_ANGLE = 90;
 
 	public ColorGraphFrame(int width, int height) {
@@ -23,6 +23,7 @@ public class ColorGraphFrame extends JPanel{
 	
 	public void setColor(Color color){
 		this.color = color;
+		
 		repaint();
 	}
 	

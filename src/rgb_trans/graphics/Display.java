@@ -68,6 +68,7 @@ public class Display {
 	private JMenu menu;
 	private JMenuItem openFileItem;
 	private JMenuItem centerImageItem;
+	private int[] colorEditorSliders = {0, 0, 0};
 	private int[] brightnessSliders = {50, 50, 50};
 	private int saturationSliders = 50;
 	private int[] offsetSliders = {0, 0, 0};
@@ -132,9 +133,9 @@ public class Display {
 		colorHeader.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
 		colorHeader.setForeground(textColor);
 		
-		editRed = createColorSlider("Red:");
-		editGreen = createColorSlider("Green:");
-		editBlue = createColorSlider("Blue:");
+		editRed = createColorEditorSlider("Red:");
+		editGreen = createColorEditorSlider("Green:");
+		editBlue = createColorEditorSlider("Blue:");
 		
 		//Creates a sidebar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
@@ -240,8 +241,6 @@ public class Display {
 		
 		int[] pixels = {6556160, 2660, 680960, 0};
 		imageFrame.setBasePixels(pixels, 2, 2);
-		
-		run();
 	}
 	
 	private void storeSliderValues(String sliderText, int sliderValue){
@@ -301,9 +300,10 @@ public class Display {
 		}
 		imageFrame.setPixels(pixelArray);
 		
-		if(imageFrame.pixelSelected())
+		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
-		updateColorEditor();
+			updateColorEditor();
+		}
 	}
 	
 	private void brightnessPress(){
@@ -338,9 +338,10 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
-		if(imageFrame.pixelSelected())
+		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
-		updateColorEditor();
+			updateColorEditor();
+		}
 	}
 	
 	private void saturationChange(){
@@ -352,9 +353,10 @@ public class Display {
 			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
 		imageFrame.setPixels(pixelArray);
-		if(imageFrame.pixelSelected())
+		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
-		updateColorEditor();
+			updateColorEditor();
+		}
 	}
 	
 	private void saturationPress(){
@@ -441,8 +443,10 @@ public class Display {
 		}
 		imageFrame.setPixels(pixelArray);
 		
-		if(imageFrame.pixelSelected())
+		if(imageFrame.pixelSelected()){
 			graphFrame.setColor(imageFrame.getSelectedColor());
+			updateColorEditor();
+		}
 	}
 	
 	
@@ -466,6 +470,11 @@ public class Display {
 				break;
 			}
 		}
+		if(imageFrame.pixelSelected()){
+			graphFrame.setColor(imageFrame.getSelectedColor());
+			updateColorEditor();
+		}
+		
 		buttonContainer.validate();
 	}
 	
@@ -540,30 +549,64 @@ public class Display {
 		}
 	}
 	
+	private void updateColorEditor(){
+		Color color = imageFrame.getSelectedColor();
+		storeColorEditorValues("Red:", color.getRed() * 100 / 255);
+		storeColorEditorValues("Green:", color.getGreen() * 100 / 255);
+		storeColorEditorValues("Blue:", color.getBlue() * 100 / 255);
+		System.out.println(color);
+		((JSlider) editRed.getComponent(1)).setValue(getColorEditorValues("Red:"));
+		((JSlider) editGreen.getComponent(1)).setValue(getColorEditorValues("Green:"));
+		((JSlider) editBlue.getComponent(1)).setValue(getColorEditorValues("Blue:"));
+	}
 	
-	private void run(){
-		boolean running = true;
-		long lastUpTime = System.nanoTime();
-		long lastSecTime = System.nanoTime();
-		int ups = 0;
-		while(running){
-			if(System.nanoTime() - lastUpTime > NANO/UPS){
-				lastUpTime = System.nanoTime();
-				ups++;
-			}
-			if(System.nanoTime() - lastSecTime > NANO){
-				//System.out.println(ups);
-				lastSecTime = System.nanoTime();
-				ups = 0;
-			}
+	private void storeColorEditorValues(String editorText, int editorValue){
+		if (editorText == "Red:"){
+			colorEditorSliders[0] = editorValue;
+		}else if (editorText == "Green:"){
+			colorEditorSliders[1] = editorValue;
+		}else if (editorText == "Blue:"){
+			colorEditorSliders[2] = editorValue;
 		}
 	}
 	
-	private void updateColorEditor(){
-		Color color = imageFrame.getSelectedColor();
-		((JSlider) editRed.getComponent(1)).setValue(color.getRed() * 100 / 255);
-		((JSlider) editGreen.getComponent(1)).setValue(color.getGreen() * 100 / 255);
-		((JSlider) editBlue.getComponent(1)).setValue(color.getBlue() * 100 / 255);
+	private int getColorEditorValues(String editorText){
+		if (editorText == "Red:"){
+			return colorEditorSliders[0];
+		}else if (editorText == "Green:"){
+			return colorEditorSliders[1];
+		}else if (editorText == "Blue:"){
+			return colorEditorSliders[2];
+		}else{
+			return 0;
+		}
+	}
+	
+	private void colorEditorChange(){
+		Color color = new Color(getColorEditorValues("Red:") * 255 / 100, getColorEditorValues("Green:") * 255 / 100, getColorEditorValues("Blue:") * 255 / 100);
+		imageFrame.setPixel(imageFrame.getSelectedX(), imageFrame.getSelectedY(), color);
+		graphFrame.setColor(color);
+	}
+	
+	private JPanel createColorEditorSlider(String text){
+		JPanel colorEditorPanel = new JPanel();
+		colorEditorPanel.setBackground(backgroundColor1);
+		colorEditorPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
+		colorEditorPanel.setLayout(new GridLayout(0, 3));
+		JLabel label = new JLabel(text);
+		label.setForeground(textColor);
+		label.setHorizontalAlignment(JLabel.RIGHT);
+		JSlider slider = new JSlider(0, 100, getOffsetValues(text));
+		slider.setBackground(backgroundColor1);
+		slider.addChangeListener(new ChangeListener(){
+			public void stateChanged(ChangeEvent e){
+				storeColorEditorValues(label.getText(), slider.getValue());
+				colorEditorChange();
+			}
+		});
+		colorEditorPanel.add(label);
+		colorEditorPanel.add(slider);
+		return colorEditorPanel;
 	}
 	
 	public void toggleScreen(int nextScreen){

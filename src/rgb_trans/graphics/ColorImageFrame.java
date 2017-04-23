@@ -174,7 +174,7 @@ public class ColorImageFrame extends JPanel {
 	}
 
 	public void setPixel(int x, int y, Color color) {
-		pixels[y * arrayWidth + x] = (color.getRed() << 16 + color.getGreen() << 8 + color.getBlue());
+		pixels[y * arrayWidth + x] = color.getRGB();
 
 		repaint();
 	}
@@ -190,7 +190,7 @@ public class ColorImageFrame extends JPanel {
 
 	public void setPixels(int[] pixels) {
 		this.pixels = pixels;
-
+		
 		repaint();
 	}
 
