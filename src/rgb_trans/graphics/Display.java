@@ -335,6 +335,7 @@ public class Display {
 	}
 	
 	private void luminancePress(){
+		closePanel();
 		Mat4f transformation = ColorTransformationMaths.luminanceMatrix();
 		int[] pixelArray = imageFrame.getBasePixels().clone();
 		for (int i = 0; i<pixelArray.length; i++){
@@ -365,6 +366,7 @@ public class Display {
 	}
 	
 	private void saturationPress(){
+		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != "saturationPanel"){
 				JPanel panel = new JPanel();
@@ -456,6 +458,7 @@ public class Display {
 	
 	
 	private void offsetPress(){
+		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() != "offsetPanel"){
 				JPanel panel = new JPanel();
@@ -496,6 +499,7 @@ public class Display {
 	}
 	
 	private void rotationPress(){
+		closePanel();
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() != "rotationPanel"){
 				JPanel panel = new JPanel();
@@ -525,6 +529,22 @@ public class Display {
 		}
 		buttonContainer.validate();
 	}
+	
+	private void closePanel(){
+		for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			 if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
+				 buttonContainer.remove(i);
+			 }
+			 else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
+				 buttonContainer.remove(i);
+			 }else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
+				 buttonContainer.remove(i);
+			 }else if(buttonContainer.getComponent(i).getName() == "rotationPanel"){
+				 buttonContainer.remove(i);
+			 }
+		}
+	}
+	
 	
 	private void reset(){
 		 brightnessSliders[0] = 50;
