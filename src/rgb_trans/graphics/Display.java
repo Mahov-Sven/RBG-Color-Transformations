@@ -47,6 +47,7 @@ public class Display {
 	private static Color borderColor1 = new Color(36, 38, 45);
 	private static Color textColor = new Color(150, 18, 39);
 	
+	private JFrame frame;
 	private ColorImageFrame imageFrame;
 	private ColorGraphFrame graphFrame;
 	private JPanel frameContainer;
@@ -64,6 +65,7 @@ public class Display {
 	private JMenuItem openFileItem;
 	private JMenuItem centerImageItem;
 	private int[] brightnessSliders = {50, 50, 50};
+	private int saturationSliders = 50;
 	
 	private int screen = 0;
 	
@@ -75,7 +77,7 @@ public class Display {
 	}
 	
 	public void drawMain(){
-		JFrame frame = new JFrame("Title");
+		frame = new JFrame("Title");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		menuBar = new JMenuBar();
@@ -282,6 +284,7 @@ public class Display {
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
+				panel.setName("brightnessPanel");
 				JPanel redPanel = createColorSlider("Red:");
 				JPanel greenPanel = createColorSlider("Green:");
 				JPanel bluePanel = createColorSlider("Blue:");
@@ -309,11 +312,39 @@ public class Display {
 		imageFrame.setPixels(pixelArray);
 	}
 	
+	private void saturationChange(){
+		Mat4f transformation = ColorTransformationMaths.saturationMatrix(saturationSliders/50f);
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+			color = Mat4f.mul(transformation, color);
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		}
+		imageFrame.setPixels(pixelArray);
+	}
+	
 	private void saturationPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != null){
-				buttonContainer.add(new JPanel(), i+1);
-				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+				JPanel panel = new JPanel();
+				panel.setBackground(backgroundColor1);
+				panel.setPreferredSize(new Dimension(WIDTH/4,HEIGHT/24));
+				panel.setLayout(new GridLayout(0, 3));
+				panel.setName("saturationPanel");
+				JLabel label = new JLabel("Saturation");
+				label.setForeground(textColor);
+				label.setHorizontalAlignment(JLabel.RIGHT);
+				JSlider saturationSlider = new JSlider(0, 100, saturationSliders);
+				saturationSlider.setBackground(backgroundColor1);
+				saturationSlider.addChangeListener(new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						saturationSliders = saturationSlider.getValue();
+						saturationChange();
+					}
+				});
+				panel.add(label);
+				panel.add(saturationSlider);
+				buttonContainer.add(panel, i+1);
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() == null){
 				buttonContainer.remove(i+1);
@@ -356,12 +387,18 @@ public class Display {
 		 brightnessSliders[0] = 50;
 		 brightnessSliders[1] = 50;
 		 brightnessSliders[2] = 50;
+		 saturationSliders = 50;
 		 brightnessChange();
-		 if(buttonContainer.getComponent(1).getName() != "luminance"){
-			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(1)).getComponent(1)).setValue(50);
-			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(0)).getComponent(1)).setValue(50);
-			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(2)).getComponent(1)).setValue(50);
-		 }
+		 for (int i=0; i<buttonContainer.getComponentCount(); i++){
+			 if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(50);
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(50);
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(50);
+			 }
+			 else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
+				 (((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(50);
+			 }
+		}
 	}
 	
 	
