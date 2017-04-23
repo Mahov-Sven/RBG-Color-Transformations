@@ -66,6 +66,7 @@ public class Display {
 	private JMenuItem centerImageItem;
 	private int[] brightnessSliders = {50, 50, 50};
 	private int saturationSliders = 50;
+	private int[] offsetSliders = {0, 0, 0};
 	
 	private int screen = 0;
 	
@@ -280,7 +281,7 @@ public class Display {
 	
 	private void brightnessPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != null){
+			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != "brightnessPanel"){
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
@@ -293,8 +294,8 @@ public class Display {
 				panel.add(bluePanel, BorderLayout.CENTER);
 				buttonContainer.add(panel, i+1);
 				break;
-			}else if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() == null){
-				buttonContainer.remove(i+1);
+			}else if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
+				buttonContainer.remove(i);
 				break;
 			}
 		}
@@ -325,7 +326,7 @@ public class Display {
 	
 	private void saturationPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != null){
+			if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() != "saturationPanel"){
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
 				panel.setPreferredSize(new Dimension(WIDTH/4,HEIGHT/24));
@@ -346,22 +347,89 @@ public class Display {
 				panel.add(saturationSlider);
 				buttonContainer.add(panel, i+1);
 				break;
-			}else if(buttonContainer.getComponent(i).getName() == "saturation" && buttonContainer.getComponent(i + 1).getName() == null){
-				buttonContainer.remove(i+1);
+			}else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
+				buttonContainer.remove(i);
 				break;
 			}
 		}
 		buttonContainer.validate();
 	}
 	
+	private void storeOffsetValues(String sliderText, int sliderValue){
+		if (sliderText == "Red:"){
+			offsetSliders[0] = sliderValue;
+		}else if (sliderText == "Green:"){
+			offsetSliders[1] = sliderValue;
+		}else if (sliderText == "Blue:"){
+			offsetSliders[2] = sliderValue;
+		}
+	}
+	
+	private int getOffsetValues(String sliderText){
+		if (sliderText == "Red:"){
+			return offsetSliders[0];
+		}else if (sliderText == "Green:"){
+			return offsetSliders[1];
+		}else if (sliderText == "Blue:"){
+			return offsetSliders[2];
+		}else{
+			return 50;
+		}
+	}
+	
+	private JPanel createOffsetSlider(String text){
+		JPanel offsetPanel = new JPanel();
+		offsetPanel.setBackground(backgroundColor1);
+		offsetPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
+		offsetPanel.setLayout(new GridLayout(0, 3));
+		JLabel label = new JLabel(text);
+		label.setForeground(textColor);
+		label.setHorizontalAlignment(JLabel.RIGHT);
+		JSlider slider = new JSlider(0, 100, getOffsetValues(text));
+		slider.setBackground(backgroundColor1);
+		slider.addChangeListener(new ChangeListener(){
+			public void stateChanged(ChangeEvent e){
+				storeOffsetValues(label.getText(), slider.getValue());
+				offsetChange();
+			}
+		});
+		offsetPanel.add(label);
+		offsetPanel.add(slider);
+		return offsetPanel;
+	}
+	
+	private void offsetChange(){
+		Mat4f transformation = ColorTransformationMaths.offsetMatrix(offsetSliders[0]/50f, offsetSliders[1]/50f, offsetSliders[2]/50f);
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+			color = Mat4f.mul(transformation, color);
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
+		}
+		imageFrame.setPixels(pixelArray);
+		
+		if(imageFrame.pixelSelected())
+			graphFrame.setColor(imageFrame.getSelectedColor());
+	}
+	
+	
 	private void offsetPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() != null){
-				buttonContainer.add(new JPanel(), i+1);
-				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
+			if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() != "offsetPanel"){
+				JPanel panel = new JPanel();
+				panel.setBackground(backgroundColor1);
+				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
+				panel.setName("offsetPanel");
+				JPanel redPanel = createOffsetSlider("Red:");
+				JPanel greenPanel = createOffsetSlider("Green:");
+				JPanel bluePanel = createOffsetSlider("Blue:");
+				panel.add(redPanel, BorderLayout.CENTER);
+				panel.add(greenPanel, BorderLayout.CENTER);
+				panel.add(bluePanel, BorderLayout.CENTER);
+				buttonContainer.add(panel, i+1);
 				break;
-			}else if(buttonContainer.getComponent(i).getName() == "offset" && buttonContainer.getComponent(i + 1).getName() == null){
-				buttonContainer.remove(i+1);
+			}else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
+				buttonContainer.remove(i);
 				break;
 			}
 		}
@@ -388,7 +456,11 @@ public class Display {
 		 brightnessSliders[1] = 50;
 		 brightnessSliders[2] = 50;
 		 saturationSliders = 50;
+		 offsetSliders[0] = 0;
+		 offsetSliders[1] = 0;
+		 offsetSliders[2] = 0;
 		 brightnessChange();
+		 offsetChange();
 		 for (int i=0; i<buttonContainer.getComponentCount(); i++){
 			 if(buttonContainer.getComponent(i).getName() == "brightnessPanel"){
 				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(50);
@@ -397,6 +469,10 @@ public class Display {
 			 }
 			 else if(buttonContainer.getComponent(i).getName() == "saturationPanel"){
 				 (((JSlider)((JPanel) buttonContainer.getComponent(i)).getComponent(1))).setValue(50);
+			 }else if(buttonContainer.getComponent(i).getName() == "offsetPanel"){
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(1)).getComponent(1)).setValue(0);
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(0)).getComponent(1)).setValue(0);
+				 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(i)).getComponent(2)).getComponent(1)).setValue(0);
 			 }
 		}
 	}
