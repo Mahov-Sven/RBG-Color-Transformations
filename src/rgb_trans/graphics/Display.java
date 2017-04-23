@@ -534,7 +534,7 @@ public class Display {
 				});
 				panel.add(label);
 				panel.add(rotationSlider);
-				if (buttonContainer.getComponent(i).getName() == "brightness"){
+				if (buttonContainer.getComponent(i).getName() == "rotation"){
 					buttonContainer.add(panel, i+1);
 				}else{
 					buttonContainer.add(panel, i);
