@@ -215,8 +215,10 @@ public class Display {
 		JPanel colorPanel = new JPanel();
 		colorPanel.setBackground(backgroundColor1);
 		colorPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
+		colorPanel.setLayout(new GridLayout(0, 3));
 		JLabel label = new JLabel(text);
 		label.setForeground(textColor);
+		label.setHorizontalAlignment(JLabel.RIGHT);
 		JSlider slider = new JSlider(0, 100, getSliderValues(text));
 		slider.setBackground(backgroundColor1);
 		slider.addChangeListener(new ChangeListener(){
