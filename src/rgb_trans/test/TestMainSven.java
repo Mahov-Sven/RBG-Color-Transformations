@@ -34,7 +34,6 @@ public class TestMainSven {
 
 	public static void main(String... args){
 		
-		imageFrame = new ColorImageFrame(WIDTH, HEIGHT, Color.BLACK);
 		graphFrame = new ColorGraphFrame(WIDTH, HEIGHT);
 		
 		JFrame frame = new JFrame("Title");

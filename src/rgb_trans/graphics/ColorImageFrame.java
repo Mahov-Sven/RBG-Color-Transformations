@@ -23,8 +23,9 @@ public class ColorImageFrame extends JPanel {
 	private int windowX, windowY;
 	private int selected;
 	private Color backgroundColor;
+	private Display display;
 
-	public ColorImageFrame(int width, int height, Color backgroundColor) {
+	public ColorImageFrame(int width, int height, Color backgroundColor, Display display) {
 		this.pixels = new int[0];
 		this.arrayWidth = 0;
 		this.arrayHeight = 0;
@@ -33,6 +34,7 @@ public class ColorImageFrame extends JPanel {
 		this.windowY = 100;
 		this.selected = -1;
 		this.backgroundColor = backgroundColor;
+		this.display = display;
 
 		setPreferredSize(new Dimension(width, height));
 
@@ -87,18 +89,21 @@ public class ColorImageFrame extends JPanel {
 	private void clickSelected(int x, int y) {
 		int pixelX = selected % arrayWidth;
 		int pixelY = selected / arrayHeight;
-		System.out.println("pixelX: " + pixelX + ", x:" + x);
 		if (x < windowX || y < windowY || x > windowX + arrayWidth * pixelSize || y > windowY + arrayWidth * pixelSize
 				|| (x > windowX + pixelX * pixelSize && y > windowY + pixelY * pixelSize
 						&& x < windowX + (pixelX + 1) * pixelSize && y < windowY + (pixelY + 1) * pixelSize)) {
 			selected = -1;
-		} else {
+			display.toggleScreen(0);
+			
+		} else {		
 			x -= windowX;
 			y -= windowY;
 			x /= pixelSize;
 			y /= pixelSize;
 
 			selected = y * arrayWidth + x;
+			
+			display.toggleScreen(1);
 		}
 
 		repaint();

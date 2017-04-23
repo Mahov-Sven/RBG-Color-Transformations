@@ -47,6 +47,7 @@ public class Display {
 	private static Color textColor = new Color(150, 18, 39);
 	
 	private ColorImageFrame imageFrame;
+	private ColorGraphFrame graphFrame;
 	private JPanel sideBar;
 	private JPanel buttonContainer;
 	private JLabel buttonHeader;
@@ -60,6 +61,10 @@ public class Display {
 	private JMenuItem openFileItem;
 	private JMenuItem centerImageItem;
 	private int[] brightnessSliders = {50, 50, 50};
+	
+	private int screen = 0;
+	
+	//private Dimension sideBarDefaultWidth = 
 	
 	public Display(int WIDTH, int HEIGHT){
 		this.WIDTH = WIDTH;
@@ -98,7 +103,10 @@ public class Display {
 		menu.add(centerImageItem);
 		menuBar.add(menu);
 		
-		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT, backgroundColor);
+		imageFrame = new ColorImageFrame(3*WIDTH/4, HEIGHT, backgroundColor, this);
+		
+		graphFrame = new ColorGraphFrame(HEIGHT, HEIGHT);
+		graphFrame.setPreferredSize(new Dimension(0, 0));
 		
 		//Creates a sidbar using a JPanel that is 1/4 of the width and the full height.
 		sideBar = new JPanel();
@@ -177,6 +185,7 @@ public class Display {
 		
 		
 		frame.setJMenuBar(menuBar);
+		frame.add(graphFrame);
 		frame.add(imageFrame);
 		frame.add(sideBar, BorderLayout.LINE_END);
 		frame.setLocationByPlatform(true);
@@ -209,6 +218,10 @@ public class Display {
 		}else{
 			return 50;
 		}
+	}
+	
+	public ColorImageFrame getImageFrame(){
+		return imageFrame;
 	}
 	
 	private JPanel createColorSlider(String text){
@@ -342,7 +355,7 @@ public class Display {
 	}
 	
 	
-	private static void run(){
+	private void run(){
 		boolean running = true;
 		long lastUpTime = System.nanoTime();
 		long lastSecTime = System.nanoTime();
@@ -358,5 +371,21 @@ public class Display {
 				ups = 0;
 			}
 		}
+	}
+	
+	public void toggleScreen(int nextScreen){
+		switch(nextScreen){
+		/* To the Image Screen */
+		case 0:
+			imageFrame.setSize(3*WIDTH/4, HEIGHT);
+			graphFrame.setSize(0, 0);
+			break;
+		/* To the Graph Screen */
+		case 1:
+			imageFrame.setSize(WIDTH / 2, HEIGHT / 2);
+			graphFrame.setSize(WIDTH / 2, HEIGHT / 2);
+			break;
+		}
+		screen = nextScreen;
 	}
 }
