@@ -56,6 +56,7 @@ public class Display {
 	private JButton saturationButton;
 	private JButton offsetButton;
 	private JButton rotationButton;
+	private JButton resetButton;
 	private JMenuBar menuBar;
 	private JMenu menu;
 	private JMenuItem openFileItem;
@@ -129,18 +130,21 @@ public class Display {
 		saturationButton = new JButton("Change Saturation");
 		offsetButton = new JButton("Change Offset");
 		rotationButton = new JButton("Change Rotation");
+		resetButton = new JButton("Reset");
 		
 		brightnessButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
 		luminanceButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
 		saturationButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
 		offsetButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
 		rotationButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
+		resetButton.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/10));
 		
 		brightnessButton.setForeground(textColor);
 		luminanceButton.setForeground(textColor);
 		saturationButton.setForeground(textColor);
 		offsetButton.setForeground(textColor);
 		rotationButton.setForeground(textColor);
+		resetButton.setForeground(textColor);
 		
 		brightnessButton.addActionListener(new ActionListener(){
 			 public void actionPerformed(ActionEvent e){
@@ -167,18 +171,25 @@ public class Display {
 				 rotationPress();
 			 }
 		});
+		resetButton.addActionListener(new ActionListener(){
+			 public void actionPerformed(ActionEvent e){
+				 reset();
+			 }
+		});
 		
 		brightnessButton.setName("brightness");
 		luminanceButton.setName("luminance");
 		saturationButton.setName("saturation");
 		offsetButton.setName("offset");
 		rotationButton.setName("rotation");
+		resetButton.setName("reset");
 		
 		buttonContainer.add(brightnessButton, BorderLayout.CENTER);
 		buttonContainer.add(luminanceButton, BorderLayout.CENTER);
 		buttonContainer.add(saturationButton, BorderLayout.CENTER);
 		buttonContainer.add(offsetButton, BorderLayout.CENTER);
 		buttonContainer.add(rotationButton, BorderLayout.CENTER);
+		buttonContainer.add(resetButton, BorderLayout.CENTER);
 		
 		sideBar.add(buttonHeader, BorderLayout.PAGE_START);
 		sideBar.add(buttonContainer);
@@ -261,31 +272,13 @@ public class Display {
 			if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() != null){
 				JPanel panel = new JPanel();
 				panel.setBackground(backgroundColor1);
-				panel.setPreferredSize(new Dimension(WIDTH/4, 4 * HEIGHT/24));
+				panel.setPreferredSize(new Dimension(WIDTH/4, 3 * HEIGHT/24));
 				JPanel redPanel = createColorSlider("Red:");
 				JPanel greenPanel = createColorSlider("Green:");
 				JPanel bluePanel = createColorSlider("Blue:");
-				JPanel resetPanel = new JPanel();
-				resetPanel.setBackground(backgroundColor1);
-				JButton reset = new JButton("Reset");
-				reset.setForeground(textColor);
-				reset.addActionListener(new ActionListener(){
-					 public void actionPerformed(ActionEvent e){
-						 brightnessSliders[0] = 50;
-						 brightnessSliders[1] = 50;
-						 brightnessSliders[2] = 50;
-						 brightnessChange();
-						 ((JSlider) redPanel.getComponent(1)).setValue(50);
-						 ((JSlider) bluePanel.getComponent(1)).setValue(50);
-						 ((JSlider) greenPanel.getComponent(1)).setValue(50);
-					 }
-				});
-				resetPanel.setPreferredSize(new Dimension(WIDTH/4, HEIGHT/25));
-				resetPanel.add(reset);
 				panel.add(redPanel, BorderLayout.CENTER);
 				panel.add(greenPanel, BorderLayout.CENTER);
 				panel.add(bluePanel, BorderLayout.CENTER);
-				panel.add(resetPanel, BorderLayout.CENTER);
 				buttonContainer.add(panel, i+1);
 				break;
 			}else if(buttonContainer.getComponent(i).getName() == "brightness" && buttonContainer.getComponent(i + 1).getName() == null){
@@ -297,17 +290,14 @@ public class Display {
 	}
 	
 	private void luminancePress(){
-		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			if(buttonContainer.getComponent(i).getName() == "luminance" && buttonContainer.getComponent(i + 1).getName() != null){
-				buttonContainer.add(new JPanel(), i+1);
-				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
-				break;
-			}else if(buttonContainer.getComponent(i).getName() == "luminance" && buttonContainer.getComponent(i + 1).getName() == null){
-				buttonContainer.remove(i+1);
-				break;
-			}
+		Mat4f transformation = ColorTransformationMaths.luminanceMatrix();
+		int[] pixelArray = imageFrame.getBasePixels().clone();
+		for (int i = 0; i<pixelArray.length; i++){
+			Vec4f color = ColorTransformationMaths.loadColorToVec4f(new Color(pixelArray[i]));
+			color = Mat4f.mul(transformation, color);
+			pixelArray[i] = ColorTransformationMaths.vec4fToColor(color).getRGB();
 		}
-		buttonContainer.validate();
+		imageFrame.setPixels(pixelArray);
 	}
 	
 	private void saturationPress(){
@@ -340,18 +330,29 @@ public class Display {
 	
 	private void rotationPress(){
 		for (int i=0; i<buttonContainer.getComponentCount(); i++){
-			try{
-				if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() == null){
-					buttonContainer.remove(i+1);
-					break;
-				}
-			}catch(ArrayIndexOutOfBoundsException e){
+			if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() != null){
 				buttonContainer.add(new JPanel(), i+1);
 				buttonContainer.getComponent(i+1).setPreferredSize(new Dimension(WIDTH/4, HEIGHT/5));
 				break;
+			}else if(buttonContainer.getComponent(i).getName() == "rotation" && buttonContainer.getComponent(i + 1).getName() == null){
+				buttonContainer.remove(i+1);
+				break;
 			}
+			buttonContainer.validate();
 		}
 		buttonContainer.validate();
+	}
+	
+	private void reset(){
+		 brightnessSliders[0] = 50;
+		 brightnessSliders[1] = 50;
+		 brightnessSliders[2] = 50;
+		 brightnessChange();
+		 if(buttonContainer.getComponent(1).getName() != "luminance"){
+			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(1)).getComponent(1)).setValue(50);
+			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(0)).getComponent(1)).setValue(50);
+			 ((JSlider)((JPanel)((JPanel) buttonContainer.getComponent(1)).getComponent(2)).getComponent(1)).setValue(50);
+		 }
 	}
 	
 	
